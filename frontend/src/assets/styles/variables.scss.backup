@@ -1,0 +1,158 @@
+// ===== ЦВЕТОВАЯ ПАЛИТРА =====
+:root {
+  // Основные цвета проекта
+  --primary-color: #a29bfe;      // Основной фиолетовый
+  --primary-dark: #8c7ae6;       // Темный фиолетовый
+  --primary-light: #b8a9ff;      // Светлый фиолетовый
+  
+  --secondary-color: #fab1a0;    // Коралловый акцент
+  --secondary-dark: #f39c7d;     // Темный коралловый
+  --secondary-light: #ffc4b3;    // Светлый коралловый
+  
+  // Фоновые цвета
+  --bg-primary: #1e1e2f;         // Основной темный фон
+  --bg-secondary: #2c2c44;       // Вторичный темный фон
+  --bg-tertiary: #4a4a6a;        // Третичный фон для карточек
+  
+  // Текстовые цвета
+  --text-primary: #e0e0e0;       // Основной текст
+  --text-secondary: #b8b8b8;     // Вторичный текст
+  --text-muted: #8a8a8a;         // Приглушенный текст
+  
+  // Системные цвета
+  --success-color: #00b894;      // Зеленый для успеха
+  --warning-color: #fdcb6e;      // Желтый для предупреждений
+  --error-color: #e17055;        // Красный для ошибок
+  --info-color: #74b9ff;         // Синий для информации
+  
+  // Нейтральные цвета
+  --white: #ffffff;
+  --black: #000000;
+  
+  // Градации серого
+  --gray-50: #f8f9fa;
+  --gray-100: #e9ecef;
+  --gray-200: #dee2e6;
+  --gray-300: #ced4da;
+  --gray-400: #adb5bd;
+  --gray-500: #6c757d;
+  --gray-600: #495057;
+  --gray-700: #343a40;
+  --gray-800: #212529;
+  --gray-900: #1a1a1a;
+  
+  // Семантические цвета
+  --text-color: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --text-muted: var(--text-muted);
+  
+  --bg-color: var(--bg-primary);
+  --bg-secondary: var(--bg-secondary);
+  --light-bg: var(--bg-tertiary);
+  
+  --border-color: #4a4a6a;
+  --border-light: #2c2c44;
+  
+  // Состояния
+  --opacity-disabled: 0.6;
+  --cursor-disabled: not-allowed;
+  --cursor-pointer: pointer;
+}
+
+// ===== ТИПОГРАФИКА =====
+:root {
+  // Семейства шрифтов
+  --font-family-heading: 'MedievalSharp', cursive;
+  --font-family-body: 'Lora', serif;
+  --font-family-fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  
+  // Размеры шрифтов
+  --font-size-xs: 0.75rem;    // 12px
+  --font-size-sm: 0.875rem;   // 14px
+  --font-size-base: 1rem;     // 16px
+  --font-size-lg: 1.125rem;   // 18px
+  --font-size-xl: 1.25rem;    // 20px
+  --font-size-2xl: 1.5rem;    // 24px
+  --font-size-3xl: 1.875rem;  // 30px
+  --font-size-4xl: 2.25rem;   // 36px
+  
+  // Веса шрифтов
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  // Высота строк
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+}
+
+// ===== РАЗМЕРЫ И ОТСТУПЫ =====
+:root {
+  // Базовые размеры
+  --spacing-xs: 0.25rem;   // 4px
+  --spacing-sm: 0.5rem;    // 8px
+  --spacing-md: 1rem;      // 16px
+  --spacing-lg: 1.5rem;    // 24px
+  --spacing-xl: 2rem;      // 32px
+  --spacing-2xl: 3rem;     // 48px
+  --spacing-3xl: 4rem;     // 64px
+  
+  // Радиусы скругления
+  --border-radius-sm: 0.25rem;  // 4px
+  --border-radius: 0.375rem;    // 6px
+  --border-radius-md: 0.5rem;   // 8px
+  --border-radius-lg: 0.75rem;  // 12px
+  --border-radius-xl: 1rem;     // 16px
+  --border-radius-full: 9999px;
+  
+  // Тени для темной темы
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+}
+
+// ===== АДАПТИВНОСТЬ =====
+:root {
+  // Брейкпоинты
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  // Контейнеры
+  --container-padding: var(--spacing-md);
+  --container-max-width: 1200px;
+}
+
+// ===== АНИМАЦИИ =====
+:root {
+  // Длительности
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  
+  // Функции плавности
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ===== Z-ИНДЕКСЫ =====
+:root {
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+} 
