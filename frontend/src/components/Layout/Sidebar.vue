@@ -2,25 +2,30 @@
   <aside class="sidebar" :class="{ 'sidebar--collapsed': isCollapsed }">
     <div class="sidebar-header">
       <button class="sidebar-toggle" @click="toggleSidebar">
-        <span class="toggle-icon">{{ isCollapsed ? '→' : '←' }}</span>
+        <img :src="isCollapsed ? leftArrowPng : rightArrowPng" alt="toggle" class="toggle-arrow" />
       </button>
       <h3 v-if="!isCollapsed" class="sidebar-title">Меню</h3>
     </div>
     
     <nav class="sidebar-nav">
       <div class="nav-section">
-        <h4 v-if="!isCollapsed" class="nav-section-title">Основное</h4>
         <ul class="nav-list">
           <li>
-            <router-link to="/" class="nav-item" :title="isCollapsed ? 'Главная' : ''">
-              <span class="nav-icon">🏠</span>
+            <router-link to="/" class="nav-item" :title="isCollapsed ? 'Главная' : ''" :class="{ 'centered': isCollapsed }">
+              <img :src="homepageIcon" alt="Главная" class="nav-icon" />
               <span v-if="!isCollapsed" class="nav-text">Главная</span>
             </router-link>
           </li>
           <li>
-            <router-link to="/about" class="nav-item" :title="isCollapsed ? 'О проекте' : ''">
-              <span class="nav-icon">ℹ️</span>
-              <span v-if="!isCollapsed" class="nav-text">О проекте</span>
+            <router-link to="/board" class="nav-item" :title="isCollapsed ? 'Доска объявлений' : ''" :class="{ 'centered': isCollapsed }">
+              <img :src="boardIcon" alt="Доска объявлений" class="nav-icon" />
+              <span v-if="!isCollapsed" class="nav-text">Доска объявлений</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/responses" class="nav-item" :title="isCollapsed ? 'Отклики' : ''" :class="{ 'centered': isCollapsed }">
+              <img :src="feedbackIcon" alt="Отклики" class="nav-icon" />
+              <span v-if="!isCollapsed" class="nav-text">Отклики</span>
             </router-link>
           </li>
         </ul>
@@ -28,15 +33,15 @@
     </nav>
     
     <div class="sidebar-footer">
-      <div v-if="!isCollapsed" class="user-info">
-        <div class="user-avatar">👤</div>
-        <div class="user-details">
+      <div class="user-info" :class="{ 'centered': isCollapsed }">
+        <div class="user-avatar"><img :src="userIcon" alt="Пользователь" class="user-avatar-img" /></div>
+        <div v-if="!isCollapsed" class="user-details">
           <p class="user-name">Пользователь</p>
           <p class="user-role">Гость</p>
         </div>
       </div>
       <button class="logout-btn" :title="isCollapsed ? 'Выйти' : ''">
-        <span class="nav-icon">🚪</span>
+        <img :src="openDoorIcon" alt="Выйти" class="nav-icon" />
         <span v-if="!isCollapsed" class="nav-text">Выйти</span>
       </button>
     </div>
@@ -44,13 +49,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
+import { useUiStore } from '@/stores/ui'
+import homepageIcon from '@/assets/images/icons/homepage_icon.png'
+import boardIcon from '@/assets/images/icons/board_icon.png'
+import feedbackIcon from '@/assets/images/icons/feedback_icon.png'
+import leftArrowPng from '@/assets/images/icons/left_arrow.png'
+import rightArrowPng from '@/assets/images/icons/right_arrow.png'
+import userIcon from '@/assets/images/icons/user_icon.png'
+import openDoorIcon from '@/assets/images/icons/open_door.png'
 
-const isCollapsed = ref(false)
-
-const toggleSidebar = () => {
-  isCollapsed.value = !isCollapsed.value
-}
+const ui = useUiStore()
+const isCollapsed = computed(() => ui.sidebarCollapsed)
+const toggleSidebar = ui.toggleSidebar
 </script>
 
 <style scoped>
@@ -67,7 +78,9 @@ const toggleSidebar = () => {
   transition: width var(--duration-normal) var(--ease-in-out);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   box-shadow: var(--shadow-lg);
+  border-radius: 0;
 }
 
 .sidebar--collapsed {
@@ -75,19 +88,20 @@ const toggleSidebar = () => {
 }
 
 .sidebar-header {
-  padding: var(--spacing-lg);
+  padding: 10px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+  border-radius: 0;
 }
 
 .sidebar-toggle {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius);
+  padding: 10px;
+  border-radius: 0;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-in-out);
   font-size: var(--font-size-lg);
@@ -114,44 +128,36 @@ const toggleSidebar = () => {
 }
 
 .sidebar-nav {
-  flex: 1;
-  padding: var(--spacing-lg);
-  overflow-y: auto;
+  padding: 10px;
+  overflow-y: visible;
+  border-radius: 0;
 }
 
 .nav-section {
-  margin-bottom: var(--spacing-xl);
-}
-
-.nav-section-title {
-  margin: 0 0 var(--spacing-md) 0;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  font-family: var(--font-family-heading);
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  margin-bottom: 0;
+  border-radius: 0;
 }
 
 .nav-list {
   list-style: none;
-  padding: 0;
+  padding: 10px 10px 0 10px;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-lg);
+  border-radius: 0;
 }
 
 .nav-item {
   color: var(--text-secondary);
   text-decoration: none;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius);
+  padding: 10px;
+  border-radius: 0;
   transition: all var(--duration-fast) var(--ease-in-out);
   font-family: var(--font-family-body);
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
@@ -170,31 +176,38 @@ const toggleSidebar = () => {
 }
 
 .nav-icon {
-  font-size: var(--font-size-lg);
-  min-width: 20px;
+  font-size: 2.1rem;
+  min-width: 36px;
+  min-height: 36px;
+  width: 36px;
+  height: 36px;
   text-align: center;
+  object-fit: contain;
+  display: block;
 }
 
 .nav-text {
   flex: 1;
+  font-size: 1.15rem;
 }
 
 .sidebar-footer {
-  padding: var(--spacing-lg);
+  padding: 10px;
   border-top: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  border-radius: 0;
 }
 
 .user-info {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
+  padding: 10px;
   background: var(--bg-tertiary);
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  border-radius: 0;
+  border: none;
 }
 
 .user-avatar {
@@ -205,8 +218,15 @@ const toggleSidebar = () => {
   align-items: center;
   justify-content: center;
   background: var(--primary-color);
-  border-radius: var(--border-radius);
+  border-radius: 0;
   color: var(--white);
+}
+
+.user-avatar-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
 }
 
 .user-details {
@@ -234,10 +254,10 @@ const toggleSidebar = () => {
 
 .logout-btn {
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  border: none;
   color: var(--text-secondary);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius);
+  padding: 10px;
+  border-radius: 0;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-in-out);
   font-family: var(--font-family-body);
@@ -282,5 +302,23 @@ const toggleSidebar = () => {
 
 .sidebar-nav::-webkit-scrollbar-thumb:hover {
   background: var(--primary-color);
+}
+
+.toggle-arrow {
+  width: 36px;
+  height: 36px;
+  display: block;
+  object-fit: contain;
+  transition: transform var(--duration-fast) var(--ease-in-out);
+}
+
+/* Центрирование для .nav-item и .user-info при isCollapsed */
+.centered {
+  justify-content: center !important;
+}
+
+.user-info.centered {
+  flex-direction: column;
+  align-items: center;
 }
 </style> 

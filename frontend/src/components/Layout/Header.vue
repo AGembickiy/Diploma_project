@@ -1,15 +1,15 @@
 <template>
   <header class="header">
+    <button class="theme-toggle theme-fixed" :style="{ left: sidebarWidth }" @click="toggleTheme">
+      <span v-if="isDarkTheme">☀️</span>
+      <span v-else>🌙</span>
+    </button>
     <div class="header-container">
       <div class="logo-block">
         <img src="@/assets/images/logos/mythic_realms_logo.png" alt="Mythic Realms Logo" class="logo-img" />
         <span class="mmorpg-title">MMORPG</span>
       </div>
-      <div class="header-actions">
-        <button class="theme-toggle" @click="toggleTheme">
-          <span v-if="isDarkTheme">☀️</span>
-          <span v-else>🌙</span>
-        </button>
+      <div class="header-right">
         <button class="menu-toggle" @click="toggleMobileMenu">
           <span class="menu-icon">☰</span>
         </button>
@@ -32,10 +32,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useUiStore } from '@/stores/ui'
 
 const isDarkTheme = ref(true)
 const isMobileMenuOpen = ref(false)
+const ui = useUiStore()
+const sidebarWidth = computed(() => ui.sidebarCollapsed ? '70px' : '280px')
 
 const toggleTheme = () => {
   isDarkTheme.value = !isDarkTheme.value
@@ -69,11 +72,14 @@ const closeMobileMenu = () => {
   align-items: center;
   justify-content: space-between;
   min-height: 70px;
+  position: relative;
 }
 
 .logo-block {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-xl);
 }
 
@@ -191,5 +197,25 @@ const closeMobileMenu = () => {
   .logo-img {
     height: 40px;
   }
+}
+
+.theme-absolute {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.theme-fixed {
+  position: fixed;
+  top: 16px;
+  z-index: 1001;
 }
 </style> 

@@ -11,6 +11,22 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/board',
+    name: 'Board',
+    component: () => import('@/pages/Board.vue'),
+    meta: {
+      title: 'Доска объявлений'
+    }
+  },
+  {
+    path: '/responses',
+    name: 'Responses',
+    component: () => import('@/pages/Responses.vue'),
+    meta: {
+      title: 'Отклики'
+    }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/pages/NotFound.vue'),

@@ -21,11 +21,11 @@
 .footer-container {
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: var(--spacing-xl) var(--container-padding);
+  padding: 0 var(--container-padding);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60px;
+  min-height: 70px;
 }
 
 .footer-text {
