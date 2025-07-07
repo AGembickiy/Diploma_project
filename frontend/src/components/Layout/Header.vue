@@ -1,21 +1,10 @@
 <template>
   <header class="header">
     <div class="header-container">
-      <div class="logo">
-        <h1>Дипломный проект</h1>
+      <div class="logo-block">
+        <img src="@/assets/images/logos/mythic_realms_logo.png" alt="Mythic Realms Logo" class="logo-img" />
+        <span class="mmorpg-title">MMORPG</span>
       </div>
-      
-      <nav class="nav">
-        <router-link to="/" class="nav-link">
-          <span class="nav-icon">🏠</span>
-          Главная
-        </router-link>
-        <router-link to="/about" class="nav-link">
-          <span class="nav-icon">ℹ️</span>
-          О проекте
-        </router-link>
-      </nav>
-      
       <div class="header-actions">
         <button class="theme-toggle" @click="toggleTheme">
           <span v-if="isDarkTheme">☀️</span>
@@ -26,8 +15,7 @@
         </button>
       </div>
     </div>
-    
-    <!-- Мобильное меню -->
+    <!-- Мобильное меню (если нужно, можно тоже убрать) -->
     <div v-if="isMobileMenuOpen" class="mobile-menu">
       <nav class="mobile-nav">
         <router-link to="/" class="mobile-nav-link" @click="closeMobileMenu">
@@ -51,7 +39,6 @@ const isMobileMenuOpen = ref(false)
 
 const toggleTheme = () => {
   isDarkTheme.value = !isDarkTheme.value
-  // Здесь можно добавить логику переключения темы
 }
 
 const toggleMobileMenu = () => {
@@ -67,7 +54,7 @@ const closeMobileMenu = () => {
 .header {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   color: var(--text-primary);
-  box-shadow: var(--shadow-md);
+  /* box-shadow: var(--shadow-md); */
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
@@ -84,53 +71,26 @@ const closeMobileMenu = () => {
   min-height: 70px;
 }
 
-.logo h1 {
-  margin: 0;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
+.logo-block {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.logo-img {
+  height: 56px;
+  width: auto;
+  display: block;
+}
+
+.mmorpg-title {
   font-family: var(--font-family-heading);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.05em;
-}
-
-.nav {
-  display: flex;
-  gap: var(--spacing-md);
-  align-items: center;
-}
-
-.nav-link {
-  color: var(--text-secondary);
-  text-decoration: none;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius);
-  transition: all var(--duration-fast) var(--ease-in-out);
-  font-family: var(--font-family-body);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-weight: var(--font-weight-medium);
-}
-
-.nav-link:hover {
+  font-size: var(--font-size-3xl, 2.5rem);
+  font-weight: var(--font-weight-bold);
   color: var(--primary-color);
-  background-color: var(--bg-tertiary);
-  transform: translateY(-1px);
-}
-
-.nav-link.router-link-active {
-  color: var(--primary-color);
-  background-color: var(--bg-tertiary);
-  font-weight: var(--font-weight-semibold);
-  box-shadow: var(--shadow-sm);
-}
-
-.nav-icon {
-  font-size: var(--font-size-lg);
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  white-space: nowrap;
 }
 
 .header-actions {
@@ -218,8 +178,8 @@ const closeMobileMenu = () => {
     display: block;
   }
   
-  .logo h1 {
-    font-size: var(--font-size-xl);
+  .logo-img {
+    height: 48px;
   }
 }
 
@@ -228,8 +188,8 @@ const closeMobileMenu = () => {
     padding: 0 var(--spacing-md);
   }
   
-  .logo h1 {
-    font-size: var(--font-size-lg);
+  .logo-img {
+    height: 40px;
   }
 }
 </style> 
