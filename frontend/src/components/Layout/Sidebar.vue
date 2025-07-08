@@ -36,13 +36,13 @@
       <div class="user-info" :class="{ 'centered': isCollapsed }">
         <div class="user-avatar"><img :src="userIcon" alt="Пользователь" class="user-avatar-img" /></div>
         <div v-if="!isCollapsed" class="user-details">
-          <p class="user-name">Пользователь</p>
-          <p class="user-role">Гость</p>
+          <p class="user-name">{{ user.isGuest ? 'Гость' : user.username }}</p>
+          <p class="user-role">{{ user.isGuest ? 'Гость' : 'Пользователь' }}</p>
         </div>
       </div>
-      <button class="logout-btn" :title="isCollapsed ? 'Выйти' : ''">
-        <img :src="openDoorIcon" alt="Выйти" class="nav-icon" />
-        <span v-if="!isCollapsed" class="nav-text">Выйти</span>
+      <button class="logout-btn" :title="isCollapsed ? (user.isGuest ? 'Войти' : 'Выйти') : ''" @click="handleAuthClick">
+        <img :src="openDoorIcon" :alt="user.isGuest ? 'Войти' : 'Выйти'" class="nav-icon" />
+        <span v-if="!isCollapsed" class="nav-text">{{ user.isGuest ? 'Войти' : 'Выйти' }}</span>
       </button>
     </div>
   </aside>
@@ -51,6 +51,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUiStore } from '@/stores/ui'
+import { useUserStore } from '@/stores/user'
 import homepageIcon from '@/assets/images/icons/homepage_icon.png'
 import boardIcon from '@/assets/images/icons/board_icon.png'
 import feedbackIcon from '@/assets/images/icons/feedback_icon.png'
@@ -62,6 +63,16 @@ import openDoorIcon from '@/assets/images/icons/open_door.png'
 const ui = useUiStore()
 const isCollapsed = computed(() => ui.sidebarCollapsed)
 const toggleSidebar = ui.toggleSidebar
+
+const user = useUserStore()
+
+function handleAuthClick() {
+  if (user.isGuest) {
+    user.login('DemoUser')
+  } else {
+    user.logout()
+  }
+}
 </script>
 
 <style scoped>
@@ -80,7 +91,6 @@ const toggleSidebar = ui.toggleSidebar
   flex-direction: column;
   justify-content: space-between;
   box-shadow: var(--shadow-lg);
-  border-radius: 0;
 }
 
 .sidebar--collapsed {
@@ -93,7 +103,6 @@ const toggleSidebar = ui.toggleSidebar
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  border-radius: 0;
 }
 
 .sidebar-toggle {
@@ -101,14 +110,12 @@ const toggleSidebar = ui.toggleSidebar
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   padding: 10px;
-  border-radius: 0;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-in-out);
   font-size: var(--font-size-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 32px;
   height: 32px;
 }
 
@@ -130,29 +137,33 @@ const toggleSidebar = ui.toggleSidebar
 .sidebar-nav {
   padding: 10px;
   overflow-y: visible;
-  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .nav-section {
   margin-bottom: 0;
-  border-radius: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .nav-list {
   list-style: none;
-  padding: 10px 10px 0 10px;
+  padding: 0 10px;
   margin: 0;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  border-radius: 0;
+  justify-content: space-between;
 }
 
 .nav-item {
   color: var(--text-secondary);
   text-decoration: none;
   padding: 10px;
-  border-radius: 0;
   transition: all var(--duration-fast) var(--ease-in-out);
   font-family: var(--font-family-body);
   display: flex;
@@ -176,11 +187,9 @@ const toggleSidebar = ui.toggleSidebar
 }
 
 .nav-icon {
-  font-size: 2.1rem;
-  min-width: 36px;
-  min-height: 36px;
-  width: 36px;
-  height: 36px;
+  font-size: 2rem;
+  width: 32px;
+  height: 32px;
   text-align: center;
   object-fit: contain;
   display: block;
@@ -197,7 +206,6 @@ const toggleSidebar = ui.toggleSidebar
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  border-radius: 0;
 }
 
 .user-info {
@@ -206,19 +214,16 @@ const toggleSidebar = ui.toggleSidebar
   gap: var(--spacing-sm);
   padding: 10px;
   background: var(--bg-tertiary);
-  border-radius: 0;
   border: none;
 }
 
 .user-avatar {
   font-size: var(--font-size-xl);
-  min-width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--primary-color);
-  border-radius: 0;
   color: var(--white);
 }
 
@@ -257,7 +262,6 @@ const toggleSidebar = ui.toggleSidebar
   border: none;
   color: var(--text-secondary);
   padding: 10px;
-  border-radius: 0;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-in-out);
   font-family: var(--font-family-body);

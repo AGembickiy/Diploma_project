@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <button class="theme-toggle theme-fixed" :style="{ left: sidebarWidth }" @click="toggleTheme">
+    <button class="theme-toggle theme-fixed" @click="toggleTheme">
       <span v-if="isDarkTheme">☀️</span>
       <span v-else>🌙</span>
     </button>
@@ -32,13 +32,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 import { useUiStore } from '@/stores/ui'
 
 const isDarkTheme = ref(true)
 const isMobileMenuOpen = ref(false)
 const ui = useUiStore()
-const sidebarWidth = computed(() => ui.sidebarCollapsed ? '70px' : '280px')
 
 const toggleTheme = () => {
   isDarkTheme.value = !isDarkTheme.value
@@ -51,6 +50,15 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
+
+// Синхронизация класса темы на <body>
+watchEffect(() => {
+  if (isDarkTheme.value) {
+    document.body.classList.remove('theme-light')
+  } else {
+    document.body.classList.add('theme-light')
+  }
+})
 </script>
 
 <style scoped>
@@ -216,6 +224,7 @@ const closeMobileMenu = () => {
 .theme-fixed {
   position: fixed;
   top: 16px;
+  right: 16px;
   z-index: 1001;
 }
 </style> 

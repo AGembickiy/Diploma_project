@@ -44,8 +44,6 @@ import ContentArea from '@/components/Layout/ContentArea.vue'
   z-index: 1;
   align-self: stretch;
   overflow: auto;
-  border-top-right-radius: var(--border-radius-lg, 18px);
-  border-bottom-right-radius: var(--border-radius-lg, 18px);
   border-left: 1px solid var(--border-color);
   box-shadow: -4px 0 12px 0 rgba(0,0,0,0.04);
   background: var(--bg-secondary);
