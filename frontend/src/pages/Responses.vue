@@ -1,16 +1,18 @@
 <template>
-  <div class="responses-page">
-    <h1>Отклики</h1>
-    <p>Здесь будут отображаться отклики пользователей.</p>
-  </div>
+  <MainLayout>
+    <div class="responses-content">
+      <h1>Отклики</h1>
+      <p>Здесь будут отображаться отклики пользователей.</p>
+    </div>
+  </MainLayout>
 </template>
 
 <script setup lang="ts">
-// Пока без логики
+import MainLayout from '@/components/Layout/MainLayout.vue'
 </script>
 
 <style scoped>
-.responses-page {
+.responses-content {
   padding: 2rem;
   font-family: var(--font-family-body);
 }

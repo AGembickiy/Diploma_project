@@ -1,22 +1,12 @@
 <template>
-  <div class="main-layout">
-    <Header />
-    <div class="main-body">
-      <ContentArea>
-        <AnnouncementList :announcements="announcements" />
-      </ContentArea>
-      <Sidebar />
-    </div>
-    <Footer />
-  </div>
+  <MainLayout>
+    <AnnouncementList :announcements="announcements" />
+  </MainLayout>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Header from '@/components/Layout/Header.vue'
-import Sidebar from '@/components/Layout/Sidebar.vue'
-import Footer from '@/components/Layout/Footer.vue'
-import ContentArea from '@/components/Layout/ContentArea.vue'
+import MainLayout from '@/components/Layout/MainLayout.vue'
 import AnnouncementList from '@/components/UI/AnnouncementList.vue'
 import type { Announcement } from '@/types/announcement'
 
@@ -76,59 +66,4 @@ const announcements = ref<Announcement[]>([
     isActive: false
   }
 ])
-</script>
-
-<style scoped>
-.main-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  height: 100vh;
-  background: var(--background-color);
-  color: var(--text-color);
-  font-family: var(--font-family-body);
-}
-
-.main-body {
-  display: flex;
-  flex: 1 1 auto;
-  min-height: 0;
-  height: 100%;
-}
-
-.board-content {
-  padding: 2rem;
-  font-family: var(--font-family-body);
-}
-
-:deep(.sidebar) {
-  position: relative !important;
-  top: 0 !important;
-  height: 100% !important;
-  left: 0 !important;
-  z-index: 1;
-  align-self: stretch;
-  overflow: auto;
-  border-left: 1px solid var(--border-color);
-  box-shadow: -4px 0 12px 0 rgba(0,0,0,0.04);
-  background: var(--bg-secondary);
-}
-
-:deep(.content-area) {
-  flex: 1 1 auto;
-  overflow: auto;
-  min-height: 0;
-  height: 100%;
-}
-
-@media (max-width: 900px) {
-  .main-body {
-    flex-direction: column;
-  }
-  :deep(.sidebar) {
-    width: 100% !important;
-    height: auto !important;
-    position: relative !important;
-  }
-}
-</style> 
+</script> 
