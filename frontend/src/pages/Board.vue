@@ -6,11 +6,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import MainLayout from '@/components/Layout/MainLayout.vue'
-import AnnouncementList from '@/components/UI/AnnouncementList.vue'
+import MainLayout from '@/components/layout/MainLayout.vue'
+import AnnouncementList from '@/components/ui/AnnouncementList.vue'
 import type { Announcement } from '@/types/announcement'
 
-// Демо-данные для объявлений
 const announcements = ref<Announcement[]>([
   {
     id: '1',

@@ -1,11 +1,13 @@
 <template>
   <MainLayout>
-    <slot />
+    <div class="w-full max-w-5xl mx-auto py-8 px-4">
+      <slot />
+    </div>
   </MainLayout>
 </template>
 
 <script setup lang="ts">
-import MainLayout from '@/components/Layout/MainLayout.vue'
+import MainLayout from '@/components/layout/MainLayout.vue'
 </script>
 
 <style scoped>

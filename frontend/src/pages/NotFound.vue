@@ -1,17 +1,12 @@
 <template>
-  <div class="not-found">
-    <div class="error-content">
-      <h1>404</h1>
-      <h2>Страница не найдена</h2>
-      <p>К сожалению, запрашиваемая страница не существует.</p>
-      
-      <div class="actions">
-        <router-link to="/" class="btn btn-primary">
-          Вернуться на главную
-        </router-link>
-        <button @click="goBack" class="btn btn-secondary">
-          Назад
-        </button>
+  <div class="flex items-center justify-center min-h-[60vh] text-center">
+    <div class="flex flex-col items-center gap-4">
+      <h1 class="text-6xl text-primary font-bold font-heading drop-shadow m-0">404</h1>
+      <h2 class="text-2xl text-foreground font-heading drop-shadow m-0">Страница не найдена</h2>
+      <p class="text-lg text-muted font-serif mb-6 leading-relaxed">К сожалению, запрашиваемая страница не существует.</p>
+      <div class="flex gap-4 flex-wrap justify-center">
+        <router-link to="/" class="px-6 py-3 rounded bg-primary text-white font-medium transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary" aria-label="Вернуться на главную" tabindex="0">Вернуться на главную</router-link>
+        <button @click="goBack" class="px-6 py-3 rounded bg-secondary text-foreground font-medium transition hover:bg-tertiary focus:outline-none focus:ring-2 focus:ring-secondary" aria-label="Назад" tabindex="0">Назад</button>
       </div>
     </div>
   </div>
