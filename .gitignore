@@ -114,4 +114,9 @@ frontend-dev-rules.mdc
 .cursor/
 
 # Package manager lock files (using npm)
-yarn.lock 
+yarn.lock
+
+# Architecture and development guides
+frontend/ARCHITECTURE_GUIDE.md
+*.mdc
+.cursorrules 
