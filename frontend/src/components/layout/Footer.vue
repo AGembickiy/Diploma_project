@@ -15,13 +15,13 @@
 </script>
 
 <style scoped>
+@import '@/assets/styles/base.css';
 .footer {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   color: var(--text-secondary);
   border-top: 1px solid var(--border-color);
   margin-top: auto;
 }
-
 .footer-container {
   max-width: var(--container-max-width);
   margin: 0 auto;
@@ -31,20 +31,17 @@
   justify-content: space-between;
   min-height: 70px;
 }
-
 .footer-author {
   font-family: var(--font-family-body);
   font-size: var(--font-size-lg);
   color: var(--primary-color);
   margin-right: 16px;
 }
-
 .footer-text {
   font-family: var(--font-family-body);
   font-size: var(--font-size-lg);
   color: var(--text-secondary);
 }
-
 .footer-github {
   display: flex;
   align-items: center;

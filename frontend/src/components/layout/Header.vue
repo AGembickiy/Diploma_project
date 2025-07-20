@@ -15,7 +15,6 @@
         </button>
       </div>
     </div>
-    <!-- Мобильное меню (если нужно, можно тоже убрать) -->
     <div v-if="isMobileMenuOpen" class="mobile-menu">
       <nav class="mobile-nav">
         <router-link to="/" class="mobile-nav-link" @click="closeMobileMenu">
@@ -32,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useUiStore } from '@/stores/ui'
 
 const isDarkTheme = ref(true)
@@ -51,7 +50,6 @@ const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
 
-// Синхронизация класса темы на <body>
 watchEffect(() => {
   if (isDarkTheme.value) {
     document.body.classList.remove('theme-light')
@@ -62,16 +60,15 @@ watchEffect(() => {
 </script>
 
 <style scoped>
+@import '@/assets/styles/base.css';
 .header {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   color: var(--text-primary);
-  /* box-shadow: var(--shadow-md); */
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
 }
-
 .header-container {
   max-width: var(--container-max-width);
   margin: 0 auto;
@@ -82,7 +79,6 @@ watchEffect(() => {
   min-height: 70px;
   position: relative;
 }
-
 .logo-block {
   flex: 1;
   display: flex;
@@ -90,13 +86,11 @@ watchEffect(() => {
   justify-content: center;
   gap: var(--spacing-xl);
 }
-
 .logo-img {
   height: 56px;
   width: auto;
   display: block;
 }
-
 .mmorpg-title {
   font-family: var(--font-family-heading);
   font-size: var(--font-size-3xl, 2.5rem);
@@ -106,13 +100,11 @@ watchEffect(() => {
   text-shadow: 0 2px 4px rgba(0,0,0,0.25);
   white-space: nowrap;
 }
-
 .header-actions {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
 }
-
 .theme-toggle,
 .menu-toggle {
   background: var(--bg-tertiary);
@@ -129,31 +121,26 @@ watchEffect(() => {
   min-width: 40px;
   height: 40px;
 }
-
 .theme-toggle:hover,
 .menu-toggle:hover {
   color: var(--primary-color);
   background-color: var(--bg-secondary);
   transform: translateY(-1px);
 }
-
 .menu-toggle {
   display: none;
 }
-
 .mobile-menu {
   display: none;
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
   padding: var(--spacing-md);
 }
-
 .mobile-nav {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
 }
-
 .mobile-nav-link {
   color: var(--text-secondary);
   text-decoration: none;
@@ -166,47 +153,37 @@ watchEffect(() => {
   gap: var(--spacing-sm);
   font-weight: var(--font-weight-medium);
 }
-
 .mobile-nav-link:hover {
   color: var(--primary-color);
   background-color: var(--bg-tertiary);
 }
-
 .mobile-nav-link.router-link-active {
   color: var(--primary-color);
   background-color: var(--bg-tertiary);
   font-weight: var(--font-weight-semibold);
 }
-
-/* Адаптивность */
 @media (max-width: 768px) {
   .nav {
     display: none;
   }
-  
   .menu-toggle {
     display: flex;
   }
-  
   .mobile-menu {
     display: block;
   }
-  
   .logo-img {
     height: 48px;
   }
 }
-
 @media (max-width: 480px) {
   .header-container {
     padding: 0 var(--spacing-md);
   }
-  
   .logo-img {
     height: 40px;
   }
 }
-
 .theme-absolute {
   position: absolute;
   top: 0;
@@ -214,13 +191,11 @@ watchEffect(() => {
   display: flex;
   align-items: center;
 }
-
 .header-right {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
 }
-
 .theme-fixed {
   position: fixed;
   top: 16px;

@@ -104,4 +104,11 @@ temp/
 *.ntvs*
 *.njsproj
 *.sln
-*.sw? 
+*.sw?
+
+# Project specific files
+frontend-dev-rules.mdc
+*.mdc
+
+# Cursor editor
+.cursor/ 

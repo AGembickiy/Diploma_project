@@ -1,91 +1,40 @@
 <template>
-  <div class="announcement-list">
-    <!-- Заголовок и фильтры -->
-    <div class="announcement-list__header">
-      <div class="announcement-list__title-section">
-        <h1 class="announcement-list__title">Доска объявлений</h1>
-        <p class="announcement-list__subtitle">{{ filteredAnnouncements.length }} объявлений</p>
-      </div>
-      
-      <div class="announcement-list__controls">
-        <!-- Фильтр по категориям -->
-        <div class="announcement-list__filter">
-          <label class="announcement-list__filter-label">Категория:</label>
-          <select 
-            v-model="selectedCategory" 
-            class="announcement-list__filter-select"
-          >
-            <option value="">Все категории</option>
-            <option 
-              v-for="category in ANNOUNCEMENT_CATEGORIES" 
-              :key="category.value"
-              :value="category.value"
-            >
-              {{ category.label }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Сортировка -->
-        <div class="announcement-list__filter">
-          <label class="announcement-list__filter-label">Сортировка:</label>
-          <select 
-            v-model="sortBy" 
-            class="announcement-list__filter-select"
-          >
-            <option value="newest">Сначала новые</option>
-            <option value="oldest">Сначала старые</option>
-            <option value="title">По заголовку</option>
-            <option value="author">По автору</option>
-          </select>
-        </div>
-
-        <!-- Кнопка создания -->
-        <button 
-          class="announcement-list__create-btn"
-          @click="showCreateForm = true"
-        >
-          + Создать объявление
-        </button>
-      </div>
+  <div class="w-full">
+    <div v-if="filteredAnnouncements.length === 0" class="flex flex-col items-center justify-center py-12">
+      <div class="text-4xl mb-2">📋</div>
+      <h3 class="text-xl font-bold mb-2">Объявлений не найдено</h3>
+      <p class="text-base text-muted mb-4">
+        {{ selectedCategory 
+          ? `В категории "${getCategoryLabel(selectedCategory)}" пока нет объявлений` 
+          : 'Пока нет объявлений. Будьте первым!' 
+        }}
+      </p>
+      <button 
+        class="px-6 py-3 rounded bg-primary text-white font-medium transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary"
+        @click="showCreateForm = true"
+        aria-label="Создать первое объявление"
+        tabindex="0"
+      >
+        Создать первое объявление
+      </button>
     </div>
-
-    <!-- Список объявлений -->
-    <div class="announcement-list__content">
-      <div v-if="filteredAnnouncements.length === 0" class="announcement-list__empty">
-        <div class="announcement-list__empty-icon">📋</div>
-        <h3 class="announcement-list__empty-title">Объявлений не найдено</h3>
-        <p class="announcement-list__empty-text">
-          {{ selectedCategory 
-            ? `В категории "${getCategoryLabel(selectedCategory)}" пока нет объявлений` 
-            : 'Пока нет объявлений. Будьте первым!' 
-          }}
-        </p>
-        <button 
-          class="announcement-list__empty-btn"
-          @click="showCreateForm = true"
-        >
-          Создать первое объявление
-        </button>
-      </div>
-
-      <div v-else class="announcement-list__grid">
-        <AnnouncementCard
-          v-for="announcement in filteredAnnouncements"
-          :key="announcement.id"
-          :announcement="announcement"
-          @click="selectAnnouncement(announcement)"
-        />
-      </div>
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <AnnouncementCard
+        v-for="announcement in filteredAnnouncements"
+        :key="announcement.id"
+        :announcement="announcement"
+        @click="selectAnnouncement(announcement)"
+      />
     </div>
-
     <!-- Модальное окно создания/редактирования -->
-    <div v-if="showCreateForm || showEditForm" class="announcement-list__modal">
-      <div class="announcement-list__modal-overlay" @click="closeModal"></div>
-      <div class="announcement-list__modal-content">
+    <div v-if="showCreateForm || showEditForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="absolute inset-0" @click="closeModal" aria-label="Закрыть модальное окно" tabindex="0"></div>
+      <div class="relative bg-background rounded-lg shadow-lg p-6 max-w-lg w-full z-10">
         <button 
-          class="announcement-list__modal-close"
+          class="absolute top-2 right-2 text-xl text-muted hover:text-error focus:outline-none focus:ring-2 focus:ring-error rounded"
           @click="closeModal"
+          aria-label="Закрыть"
+          tabindex="0"
         >
           ✕
         </button>
@@ -131,13 +80,9 @@ const getCategoryLabel = (category: AnnouncementCategory): string => {
 // Фильтрация и сортировка объявлений
 const filteredAnnouncements = computed(() => {
   let filtered = props.announcements
-
-  // Фильтр по категории
   if (selectedCategory.value) {
     filtered = filtered.filter(announcement => announcement.category === selectedCategory.value)
   }
-
-  // Сортировка
   filtered = [...filtered].sort((a, b) => {
     switch (sortBy.value) {
       case 'newest':
@@ -152,35 +97,22 @@ const filteredAnnouncements = computed(() => {
         return 0
     }
   })
-
   return filtered
 })
 
-// Выбор объявления для редактирования
 const selectAnnouncement = (announcement: Announcement) => {
   editingAnnouncement.value = announcement
   showEditForm.value = true
 }
 
-// Обработка отправки формы
-const handleFormSubmit = (formData: any) => {
-  // Здесь будет логика сохранения объявления
-  console.log('Сохранение объявления:', formData)
-  
-  // Закрываем модальное окно
-  closeModal()
-  
-  // Сбрасываем состояние
+function closeModal() {
   showCreateForm.value = false
   showEditForm.value = false
   editingAnnouncement.value = undefined
 }
 
-// Закрытие модального окна
-const closeModal = () => {
-  showCreateForm.value = false
-  showEditForm.value = false
-  editingAnnouncement.value = undefined
+function handleFormSubmit() {
+  closeModal()
 }
 </script>
 

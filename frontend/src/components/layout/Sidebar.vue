@@ -6,7 +6,6 @@
       </button>
       <h3 v-if="!isCollapsed" class="sidebar-title">Меню</h3>
     </div>
-    
     <nav class="sidebar-nav">
       <div class="nav-section">
         <ul class="nav-list">
@@ -31,7 +30,6 @@
         </ul>
       </div>
     </nav>
-    
     <div class="sidebar-footer">
       <div class="user-info" :class="{ 'centered': isCollapsed }">
         <div class="user-avatar"><img :src="userIcon" alt="Пользователь" class="user-avatar-img" /></div>
@@ -50,6 +48,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
 import { useUserStore } from '@/stores/user'
 import homepageIcon from '@/assets/images/icons/homepage_icon.png'
@@ -60,6 +59,7 @@ import rightArrowPng from '@/assets/images/icons/right_arrow.png'
 import userIcon from '@/assets/images/icons/user_icon.png'
 import openDoorIcon from '@/assets/images/icons/open_door.png'
 
+const router = useRouter()
 const ui = useUiStore()
 const isCollapsed = computed(() => ui.sidebarCollapsed)
 const toggleSidebar = ui.toggleSidebar
@@ -67,15 +67,21 @@ const toggleSidebar = ui.toggleSidebar
 const user = useUserStore()
 
 function handleAuthClick() {
+  console.log('handleAuthClick called')
+  console.log('user.isGuest:', user.isGuest)
   if (user.isGuest) {
-    user.login('DemoUser')
+    console.log('Opening login dialog...')
+    ui.openLoginDialog()
+    console.log('showLoginDialog after open:', ui.showLoginDialog)
   } else {
+    console.log('Logging out...')
     user.logout()
   }
 }
 </script>
 
 <style scoped>
+@import '@/assets/styles/base.css';
 .sidebar {
   background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   color: var(--text-primary);
@@ -92,11 +98,9 @@ function handleAuthClick() {
   justify-content: space-between;
   box-shadow: var(--shadow-lg);
 }
-
 .sidebar--collapsed {
   width: 70px;
 }
-
 .sidebar-header {
   padding: 10px;
   border-bottom: 1px solid var(--border-color);
@@ -104,7 +108,6 @@ function handleAuthClick() {
   align-items: center;
   gap: var(--spacing-md);
 }
-
 .sidebar-toggle {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
@@ -118,13 +121,11 @@ function handleAuthClick() {
   justify-content: center;
   height: 32px;
 }
-
 .sidebar-toggle:hover {
   color: var(--primary-color);
   background: var(--bg-secondary);
   transform: translateY(-1px);
 }
-
 .sidebar-title {
   margin: 0;
   font-size: var(--font-size-lg);
@@ -133,7 +134,6 @@ function handleAuthClick() {
   color: var(--primary-color);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
-
 .sidebar-nav {
   padding: 10px;
   overflow-y: visible;
@@ -141,7 +141,6 @@ function handleAuthClick() {
   flex-direction: column;
   justify-content: space-between;
 }
-
 .nav-section {
   margin-bottom: 0;
   flex: 1;
@@ -149,7 +148,6 @@ function handleAuthClick() {
   flex-direction: column;
   justify-content: center;
 }
-
 .nav-list {
   list-style: none;
   padding: 0 10px;
@@ -159,7 +157,6 @@ function handleAuthClick() {
   flex-direction: column;
   justify-content: space-between;
 }
-
 .nav-item {
   color: var(--text-secondary);
   text-decoration: none;
@@ -172,20 +169,17 @@ function handleAuthClick() {
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
-
 .nav-item:hover {
   color: var(--primary-color);
   background: var(--bg-tertiary);
   transform: translateX(4px);
 }
-
 .nav-item.router-link-active {
   color: var(--primary-color);
   background: var(--bg-tertiary);
   font-weight: var(--font-weight-semibold);
   box-shadow: var(--shadow-sm);
 }
-
 .nav-icon {
   font-size: 2rem;
   width: 32px;
@@ -194,12 +188,10 @@ function handleAuthClick() {
   object-fit: contain;
   display: block;
 }
-
 .nav-text {
   flex: 1;
   font-size: 1.15rem;
 }
-
 .sidebar-footer {
   padding: 10px;
   border-top: 1px solid var(--border-color);
@@ -207,7 +199,6 @@ function handleAuthClick() {
   flex-direction: column;
   gap: var(--spacing-md);
 }
-
 .user-info {
   display: flex;
   align-items: center;
@@ -216,7 +207,6 @@ function handleAuthClick() {
   background: var(--bg-tertiary);
   border: none;
 }
-
 .user-avatar {
   font-size: var(--font-size-xl);
   height: 32px;
@@ -226,19 +216,16 @@ function handleAuthClick() {
   background: var(--primary-color);
   color: var(--white);
 }
-
 .user-avatar-img {
   width: 32px;
   height: 32px;
   object-fit: contain;
   display: block;
 }
-
 .user-details {
   flex: 1;
   min-width: 0;
 }
-
 .user-name {
   margin: 0;
   font-size: var(--font-size-sm);
@@ -249,14 +236,12 @@ function handleAuthClick() {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .user-role {
   margin: 0;
   font-size: var(--font-size-xs);
   color: var(--text-muted);
   font-family: var(--font-family-body);
 }
-
 .logout-btn {
   background: var(--bg-tertiary);
   border: none;
@@ -271,43 +256,33 @@ function handleAuthClick() {
   font-weight: var(--font-weight-medium);
   width: 100%;
 }
-
 .logout-btn:hover {
   color: var(--error-color);
   background: var(--bg-secondary);
   transform: translateY(-1px);
 }
-
-/* Адаптивность */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
     transition: transform var(--duration-normal) var(--ease-in-out);
   }
-  
   .sidebar--collapsed {
     transform: translateX(0);
   }
 }
-
-/* Скроллбар для сайдбара */
 .sidebar-nav::-webkit-scrollbar {
   width: 4px;
 }
-
 .sidebar-nav::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .sidebar-nav::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: var(--border-radius);
 }
-
 .sidebar-nav::-webkit-scrollbar-thumb:hover {
   background: var(--primary-color);
 }
-
 .toggle-arrow {
   width: 36px;
   height: 36px;
@@ -315,12 +290,9 @@ function handleAuthClick() {
   object-fit: contain;
   transition: transform var(--duration-fast) var(--ease-in-out);
 }
-
-/* Центрирование для .nav-item и .user-info при isCollapsed */
 .centered {
   justify-content: center !important;
 }
-
 .user-info.centered {
   flex-direction: column;
   align-items: center;
