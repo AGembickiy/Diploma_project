@@ -28,8 +28,7 @@
       <div class="flex justify-between items-center mb-2">
         <span class="text-xs text-muted">{{ formatDate(advertisement.createdAt) }}</span>
       </div>
-      <div class="ad-btns-block">
-        <button class="ad-btn" title="Создать объявление">Создать</button>
+      <div v-if="!user.isGuest" class="ad-btns-block">
         <button class="ad-btn" title="Редактировать объявление">Редактировать</button>
         <button class="ad-btn ad-btn-danger" title="Удалить объявление">Удалить</button>
       </div>
@@ -38,26 +37,14 @@
 </template>
 
 <script setup lang="ts">
-interface Media {
-  images?: string[]
-  video?: string
-  audio?: string
-}
-
-interface Advertisement {
-  id: number
-  title: string
-  description: string
-  category: 'Танки' | 'Хилы' | 'ДД' | 'Торговцы' | 'Гилдмастеры' | 'Квестгиверы' | 
-             'Кузнецы' | 'Кожевники' | 'Зельевары' | 'Мастера заклинаний'
-  image: string
-  createdAt: string
-  media?: Media
-}
+import { useUserStore } from '@/stores/user'
+import type { Advertisement } from '@/types/advertisement'
 
 defineProps<{
   advertisement: Advertisement
 }>()
+
+const user = useUserStore()
 
 const getCategoryIcon = (category: string): string => {
   const icons: Record<string, string> = {
@@ -75,8 +62,8 @@ const getCategoryIcon = (category: string): string => {
   return icons[category] || ''
 }
 
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString('ru-RU', {
+const formatDate = (date: Date): string => {
+  return date.toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'

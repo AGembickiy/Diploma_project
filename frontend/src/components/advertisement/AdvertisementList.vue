@@ -1,10 +1,12 @@
 <template>
-  <div class="ad-list-grid">
-    <AdvertisementCard
-      v-for="ad in advertisements"
-      :key="ad.id"
-      :advertisement="ad"
-    />
+  <div class="ad-list-container">
+    <div class="ad-list-grid">
+      <AdvertisementCard
+        v-for="ad in advertisements"
+        :key="ad.id"
+        :advertisement="ad"
+      />
+    </div>
   </div>
 </template>
 
@@ -53,6 +55,12 @@ const advertisements: Advertisement[] = [
 </script>
 
 <style scoped>
+.ad-list-container {
+  height: 100%;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
 .ad-list-grid {
   display: grid;
   grid-template-columns: 1fr;

@@ -17,5 +17,8 @@
   color: var(--text-primary);
   min-height: 0;
   box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 </style> 
