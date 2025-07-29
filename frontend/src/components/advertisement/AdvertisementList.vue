@@ -5,16 +5,33 @@
         v-for="ad in advertisements"
         :key="ad.id"
         :advertisement="ad"
+        @edit="handleEdit"
+        @delete="handleDelete"
       />
     </div>
+    
+    <EditAdvertisementDialog 
+      :is-visible="isEditDialogVisible"
+      :advertisement="editingAdvertisement"
+      @close="closeEditDialog"
+      @submit="handleEditSubmit"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import AdvertisementCard from './AdvertisementCard.vue'
+import EditAdvertisementDialog from './EditAdvertisementDialog.vue'
 import type { Advertisement } from '@/types/advertisement'
 
-const advertisements: Advertisement[] = [
+interface Props {
+  newAdvertisement?: Advertisement
+}
+
+const props = defineProps<Props>()
+
+const advertisements = ref<Advertisement[]>([
   {
     id: 1,
     title: 'Опытный танк ищет гильдию',
@@ -39,19 +56,52 @@ const advertisements: Advertisement[] = [
       video: true,
       audio: true
     }
-  },
-  {
-    id: 3,
-    title: 'Зельевар ищет заказы',
-    description: 'Варю все виды зелий. Большой опыт, лучшие ингредиенты. Оптовые заказы приветствуются.',
-    category: 'Зельевары',
-    image: '/images/potion.jpg',
-    createdAt: new Date('2024-03-18'),
-    media: {
-      images: ['/images/potion1.jpg', '/images/potion2.jpg', '/images/potion3.jpg']
-    }
   }
-]
+])
+
+const isEditDialogVisible = ref(false)
+const editingAdvertisement = ref<Advertisement | null>(null)
+
+// Добавляем новое объявление в начало списка
+const addAdvertisement = (advertisement: Advertisement) => {
+  advertisements.value.unshift(advertisement)
+}
+
+// Обработчик редактирования объявления
+const handleEdit = (advertisement: Advertisement) => {
+  editingAdvertisement.value = advertisement
+  isEditDialogVisible.value = true
+}
+
+// Обработчик удаления объявления
+const handleDelete = (advertisement: Advertisement) => {
+  console.log('Удаление объявления:', advertisement)
+  // Удаляем объявление из списка
+  const index = advertisements.value.findIndex(ad => ad.id === advertisement.id)
+  if (index !== -1) {
+    advertisements.value.splice(index, 1)
+  }
+}
+
+// Закрытие диалога редактирования
+const closeEditDialog = () => {
+  isEditDialogVisible.value = false
+  editingAdvertisement.value = null
+}
+
+// Обработчик сохранения изменений
+const handleEditSubmit = (updatedAdvertisement: Advertisement) => {
+  const index = advertisements.value.findIndex(ad => ad.id === updatedAdvertisement.id)
+  if (index !== -1) {
+    advertisements.value[index] = updatedAdvertisement
+  }
+  closeEditDialog()
+}
+
+// Экспортируем функцию для использования в родительском компоненте
+defineExpose({
+  addAdvertisement
+})
 </script>
 
 <style scoped>

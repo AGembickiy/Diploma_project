@@ -1,23 +1,52 @@
 <template>
   <MainLayout>
-    <div v-if="!user.isGuest" class="create-btn-container">
-      <button class="create-btn" title="Создать объявление">Создать</button>
-    </div>
     <div class="board-container">
+      <div v-if="!user.isGuest" class="create-btn-container">
+        <button class="create-btn" @click="openDialog" title="Создать объявление">Создать</button>
+      </div>
       <div class="ad-list-wrapper">
-        <AdvertisementList />
+        <AdvertisementList ref="advertisementListRef" />
       </div>
     </div>
+    
+    <CreateAdvertisementDialog 
+      :is-visible="isDialogVisible"
+      @close="closeDialog"
+      @submit="handleCreateAdvertisement"
+    />
   </MainLayout>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import MainLayout from '@/components/layout/MainLayout.vue'
 import AdvertisementList from '@/components/advertisement/AdvertisementList.vue'
+import CreateAdvertisementDialog from '@/components/advertisement/CreateAdvertisementDialog.vue'
 import { useUserStore } from '@/stores/user'
+import type { Advertisement } from '@/types/advertisement'
 
 const user = useUserStore()
-</script>
+const isDialogVisible = ref(false)
+const advertisementListRef = ref()
+
+const openDialog = () => {
+  isDialogVisible.value = true
+}
+
+const closeDialog = () => {
+  isDialogVisible.value = false
+}
+
+const handleCreateAdvertisement = (advertisement: Advertisement) => {
+  // Добавляем новое объявление в список
+  if (advertisementListRef.value) {
+    advertisementListRef.value.addAdvertisement(advertisement)
+  }
+  
+  // Закрываем диалог
+  closeDialog()
+}
+</script> 
 
 <style scoped>
 .create-btn-container {

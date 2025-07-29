@@ -29,8 +29,8 @@
         <span class="text-xs text-muted">{{ formatDate(advertisement.createdAt) }}</span>
       </div>
       <div v-if="!user.isGuest" class="ad-btns-block">
-        <button class="ad-btn" title="Редактировать объявление">Редактировать</button>
-        <button class="ad-btn ad-btn-danger" title="Удалить объявление">Удалить</button>
+        <button class="ad-btn" @click="handleEdit" title="Редактировать объявление">Редактировать</button>
+        <button class="ad-btn ad-btn-danger" @click="handleDelete" title="Удалить объявление">Удалить</button>
       </div>
     </div>
   </div>
@@ -40,9 +40,17 @@
 import { useUserStore } from '@/stores/user'
 import type { Advertisement } from '@/types/advertisement'
 
-defineProps<{
+interface Props {
   advertisement: Advertisement
-}>()
+}
+
+interface Emits {
+  (e: 'edit', advertisement: Advertisement): void
+  (e: 'delete', advertisement: Advertisement): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
 const user = useUserStore()
 
@@ -68,6 +76,16 @@ const formatDate = (date: Date): string => {
     month: 'long',
     year: 'numeric'
   })
+}
+
+const handleEdit = () => {
+  emit('edit', props.advertisement)
+}
+
+const handleDelete = () => {
+  if (confirm('Вы уверены, что хотите удалить это объявление?')) {
+    emit('delete', props.advertisement)
+  }
 }
 </script>
 
