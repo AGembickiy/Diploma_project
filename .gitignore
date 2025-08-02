@@ -119,4 +119,20 @@ yarn.lock
 # Architecture and development guides
 frontend/ARCHITECTURE_GUIDE.md
 *.mdc
-.cursorrules 
+.cursorrules
+
+# Django
+backend/venv/
+backend/__pycache__/
+backend/*/__pycache__/
+backend/*/*/__pycache__/
+backend/*.pyc
+backend/*/*.pyc
+backend/*/*/*.pyc
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+backend/.env
+backend/.env.local
+backend/.env.development
+backend/.env.production 
