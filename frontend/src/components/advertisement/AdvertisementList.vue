@@ -75,7 +75,6 @@ const handleEdit = (advertisement: Advertisement) => {
 
 // Обработчик удаления объявления
 const handleDelete = (advertisement: Advertisement) => {
-  console.log('Удаление объявления:', advertisement)
   // Удаляем объявление из списка
   const index = advertisements.value.findIndex(ad => ad.id === advertisement.id)
   if (index !== -1) {

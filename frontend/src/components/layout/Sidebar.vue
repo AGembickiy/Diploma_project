@@ -67,14 +67,9 @@ const toggleSidebar = ui.toggleSidebar
 const user = useUserStore()
 
 function handleAuthClick() {
-  console.log('handleAuthClick called')
-  console.log('user.isGuest:', user.isGuest)
   if (user.isGuest) {
-    console.log('Opening login dialog...')
     ui.openLoginDialog()
-    console.log('showLoginDialog after open:', ui.showLoginDialog)
   } else {
-    console.log('Logging out...')
     user.logout()
   }
 }

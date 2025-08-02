@@ -243,7 +243,6 @@ const closeResponseDialog = () => {
 
 const handleResponseSubmit = (response: { advertisementId: number; text: string }) => {
   // Здесь будет отправка отклика на сервер
-  console.log('Отправка отклика:', response)
   
   // Показываем уведомление об успешной отправке
   alert(`Отклик успешно отправлен на объявление "${selectedAdvertisement.value?.title}"`)
