@@ -5,6 +5,7 @@
         v-for="ad in publicAdvertisements"
         :key="ad.id"
         :advertisement="ad"
+        @response="handleResponse"
       />
     </div>
   </div>
@@ -20,7 +21,12 @@ interface Props {
   advertisements: Advertisement[]
 }
 
+interface Emits {
+  (e: 'response', advertisement: Advertisement): void
+}
+
 const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 const user = useUserStore()
 
 // Фильтруем объявления - исключаем объявления текущего пользователя
@@ -34,6 +40,10 @@ const publicAdvertisements = computed(() => {
   // Пока используем простую логику - исключаем первые 2 объявления как "пользовательские"
   return props.advertisements.slice(2)
 })
+
+const handleResponse = (advertisement: Advertisement) => {
+  emit('response', advertisement)
+}
 </script>
 
 <style scoped>

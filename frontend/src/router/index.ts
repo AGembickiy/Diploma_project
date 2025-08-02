@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -15,7 +16,8 @@ const routes: RouteRecordRaw[] = [
     name: 'Board',
     component: () => import('@/pages/Board.vue'),
     meta: {
-      title: 'Доска объявлений'
+      title: 'Доска объявлений',
+      requiresAuth: true
     }
   },
   {
@@ -23,7 +25,8 @@ const routes: RouteRecordRaw[] = [
     name: 'Responses',
     component: () => import('@/pages/Responses.vue'),
     meta: {
-      title: 'Отклики'
+      title: 'Отклики',
+      requiresAuth: true
     }
   },
   {
@@ -41,11 +44,22 @@ const router = createRouter({
   routes
 })
 
-// Глобальный guard для установки заголовков страниц
+// Глобальный guard для установки заголовков страниц и проверки авторизации
 router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = `${to.meta.title} - Дипломный проект`
   }
+  
+  // Проверка авторизации для защищенных роутов
+  if (to.meta.requiresAuth) {
+    const userStore = useUserStore()
+    if (userStore.isGuest) {
+      // Перенаправляем на главную страницу, если пользователь не авторизован
+      next('/')
+      return
+    }
+  }
+  
   next()
 })
 

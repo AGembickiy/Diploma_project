@@ -22,4 +22,13 @@ export interface Advertisement {
     video?: boolean
     audio?: boolean
   }
+}
+
+export interface Response {
+  id: number
+  advertisementId: number
+  authorId: number
+  authorName: string
+  text: string
+  createdAt: Date
 } 

@@ -164,12 +164,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useUiStore } from '@/stores/ui'
 import { useUserStore } from '@/stores/user'
 
 const ui = useUiStore()
 const user = useUserStore()
+
+// Инициализация темы при загрузке приложения
+onMounted(() => {
+  ui.initTheme()
+})
 
 const login = ref('')
 const password = ref('')

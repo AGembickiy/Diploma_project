@@ -1,7 +1,7 @@
 <template>
   <header class="header">
-    <button class="theme-toggle theme-fixed" @click="toggleTheme">
-      <span v-if="isDarkTheme">☀️</span>
+    <button class="theme-toggle theme-fixed" @click="ui.toggleTheme">
+      <span v-if="ui.isDarkTheme">☀️</span>
       <span v-else>🌙</span>
     </button>
     <div class="header-container">
@@ -31,16 +31,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useUiStore } from '@/stores/ui'
 
-const isDarkTheme = ref(true)
 const isMobileMenuOpen = ref(false)
 const ui = useUiStore()
 
-const toggleTheme = () => {
-  isDarkTheme.value = !isDarkTheme.value
-}
+// Инициализация темы при монтировании компонента
+onMounted(() => {
+  ui.initTheme()
+})
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -49,14 +49,6 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
-
-watchEffect(() => {
-  if (isDarkTheme.value) {
-    document.body.classList.remove('theme-light')
-  } else {
-    document.body.classList.add('theme-light')
-  }
-})
 </script>
 
 <style scoped>
@@ -85,6 +77,7 @@ watchEffect(() => {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-xl);
+  z-index: 1;
 }
 .logo-img {
   height: 56px;
@@ -99,6 +92,7 @@ watchEffect(() => {
   letter-spacing: 0.08em;
   text-shadow: 0 2px 4px rgba(0,0,0,0.25);
   white-space: nowrap;
+  z-index: 1;
 }
 .header-actions {
   display: flex;

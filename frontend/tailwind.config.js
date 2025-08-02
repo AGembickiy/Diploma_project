@@ -6,27 +6,43 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#a29bfe',
-        'primary-dark': '#8c7ae6',
-        'primary-light': '#b8a9ff',
-        secondary: '#fab1a0',
-        'secondary-dark': '#f39c7d',
-        'secondary-light': '#ffc4b3',
-        background: '#1e1e2f',
-        'bg-primary': '#1e1e2f',
-        'bg-secondary': '#2c2c44',
-        'bg-tertiary': '#4a4a6a',
-        foreground: '#e0e0e0',
-        muted: '#b8b8b8',
-        error: '#e17055',
-        info: '#74b9ff',
-        success: '#00b894',
-        warning: '#fdcb6e',
-        border: '#4a4a6a',
-        'border-light': '#2c2c44',
-        'text-primary': '#e0e0e0',
-        'text-secondary': '#b8b8b8',
-        'text-muted': '#8a8a8a',
+        // Основные цвета - теплые оттенки
+        primary: '#8B4513', // Saddle Brown - теплый коричневый
+        'primary-dark': '#654321', // Dark Brown
+        'primary-light': '#A0522D', // Sienna
+        
+        // Вторичные цвета - золотистые оттенки
+        secondary: '#DAA520', // Goldenrod
+        'secondary-dark': '#B8860B', // Dark Goldenrod
+        'secondary-light': '#F4A460', // Sandy Brown
+        
+        // Акцентные цвета
+        accent: '#CD853F', // Peru - теплый оранжево-коричневый
+        'accent-dark': '#A0522D', // Sienna
+        'accent-light': '#DEB887', // Burlywood
+        
+        // Фоновые цвета - мягкие светлые оттенки
+        background: '#FDF6E3', // Warm cream
+        'bg-primary': '#FDF6E3', // Warm cream
+        'bg-secondary': '#F5F5DC', // Beige
+        'bg-tertiary': '#FAF0E6', // Linen
+        
+        // Текстовые цвета - темные, но не слишком резкие
+        foreground: '#2F2F2F', // Soft black
+        muted: '#6B6B6B', // Medium gray
+        'text-primary': '#2F2F2F', // Soft black
+        'text-secondary': '#4A4A4A', // Dark gray
+        'text-muted': '#6B6B6B', // Medium gray
+        
+        // Статусные цвета - приглушенные
+        error: '#D2691E', // Chocolate - теплый красный
+        info: '#4682B4', // Steel Blue
+        success: '#228B22', // Forest Green
+        warning: '#DAA520', // Goldenrod
+        
+        // Границы - мягкие оттенки
+        border: '#D2B48C', // Tan
+        'border-light': '#F5DEB3', // Wheat
       },
       fontFamily: {
         heading: ['MedievalSharp', 'cursive'],
