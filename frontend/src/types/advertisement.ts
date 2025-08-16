@@ -10,18 +10,34 @@ export type AdvertisementCategory =
   | 'Зельевары'
   | 'Мастера заклинаний'
 
+export interface User {
+  id: number
+  username: string
+  email: string
+  email_verified: boolean
+  date_joined: string
+}
+
 export interface Advertisement {
   id: number
   title: string
   description: string
   category: AdvertisementCategory
-  image: string
-  createdAt: Date
-  media?: {
-    images?: string[]
-    video?: boolean
-    audio?: boolean
-  }
+  author: User
+  image?: string
+  video?: string
+  audio?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface AdvertisementCreate {
+  title: string
+  description: string
+  category: AdvertisementCategory
+  image?: File
+  videoFile?: File
+  audioFile?: File
 }
 
 export interface Response {

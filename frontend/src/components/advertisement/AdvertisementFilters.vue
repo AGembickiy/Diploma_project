@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
 import type { AdvertisementCategory } from '@/types/advertisement'
 
 // Пропсы
@@ -84,9 +84,9 @@ const selectedCategory = ref<AdvertisementCategory | 'all'>(props.modelValue.cat
 const selectedTimeFilter = ref<string>(props.modelValue.timeFilter)
 
 // Вычисляемое свойство для проверки активных фильтров
-const hasActiveFilters = computed(() => {
-  return selectedCategory.value !== 'all' || selectedTimeFilter.value !== 'all'
-})
+// const _hasActiveFilters = computed(() => {
+//   return selectedCategory.value !== 'all' || selectedTimeFilter.value !== 'all'
+// })
 
 // Применение фильтров
 const applyFilters = () => {

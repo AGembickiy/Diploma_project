@@ -37,8 +37,8 @@ const publicAdvertisements = computed(() => {
   }
   
   // Иначе исключаем объявления текущего пользователя
-  // Пока используем простую логику - исключаем первые 2 объявления как "пользовательские"
-  return props.advertisements.slice(2)
+  // Фильтруем по автору объявления
+  return props.advertisements.filter(ad => ad.author?.id !== user.user?.id)
 })
 
 const handleResponse = (advertisement: Advertisement) => {

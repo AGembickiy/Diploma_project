@@ -6,7 +6,7 @@
           <img :src="getCategoryIcon(advertisement.category)" alt="" class="category-icon">
           <span class="category-text">{{ advertisement.category }}</span>
         </div>
-        <span class="ad-date">{{ formatDate(advertisement.createdAt) }}</span>
+        <span class="ad-date">{{ formatDate(advertisement.created_at) }}</span>
       </div>
     </template>
     
@@ -36,19 +36,23 @@
       <h3 class="ad-title">{{ advertisement.title }}</h3>
       <p class="ad-description">{{ advertisement.description }}</p>
       
-      <div v-if="advertisement.media" class="ad-media">
-        <span v-if="advertisement.media.images" class="media-item">
+      <div v-if="advertisement.image || advertisement.video || advertisement.audio" class="ad-media">
+        <span v-if="advertisement.image" class="media-item">
           <img src="@/assets/images/icons/board_icon.png" alt="" class="media-icon">
-          <span>{{ advertisement.media.images.length }}</span>
+          <span>Изображение</span>
         </span>
-        <span v-if="advertisement.media.video" class="media-item">
+        <span v-if="advertisement.video" class="media-item">
           <img src="@/assets/images/icons/feedback_icon.png" alt="" class="media-icon">
           <span>Видео</span>
         </span>
-        <span v-if="advertisement.media.audio" class="media-item">
+        <span v-if="advertisement.audio" class="media-item">
           <img src="@/assets/images/icons/user_icon.png" alt="" class="media-icon">
           <span>Аудио</span>
         </span>
+      </div>
+      
+      <div class="ad-author" v-if="advertisement.author">
+        <small>Автор: {{ advertisement.author.username }}</small>
       </div>
     </div>
   </Card>
@@ -76,10 +80,9 @@ const emit = defineEmits<Emits>()
 const user = useUserStore()
 
 // Проверяем, является ли объявление собственным
-// Пока используем простую логику - первые 2 объявления считаются "своими"
 const isOwnAdvertisement = computed(() => {
-  if (user.isGuest) return false
-  return props.advertisement.id <= 2
+  if (user.isGuest || !user.user || !props.advertisement.author) return false
+  return props.advertisement.author.id === user.user.id
 })
 
 const getCategoryIcon = (category: string): string => {
@@ -98,8 +101,8 @@ const getCategoryIcon = (category: string): string => {
   return icons[category] || ''
 }
 
-const formatDate = (date: Date): string => {
-  return new Date(date).toLocaleDateString('ru-RU', {
+const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
@@ -178,6 +181,18 @@ const handleResponse = () => {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.ad-author {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #4a4a6a);
+}
+
+.ad-author small {
+  color: var(--text-muted, #8a8a8a);
+  font-size: 12px;
+  font-family: var(--font-family-body);
 }
 
 .media-item {

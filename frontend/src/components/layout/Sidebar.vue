@@ -34,8 +34,7 @@
       <div class="user-info" :class="{ 'centered': isCollapsed }">
         <div class="user-avatar"><img :src="userIcon" alt="Пользователь" class="user-avatar-img" /></div>
         <div v-if="!isCollapsed" class="user-details">
-          <p class="user-name">{{ user.isGuest ? 'Гость' : user.username }}</p>
-          <p class="user-role">{{ user.isGuest ? 'Гость' : 'Пользователь' }}</p>
+          <p class="user-name">{{ user.isGuest ? 'Гость' : (user.user?.username || 'Загрузка...') }}</p>
         </div>
       </div>
       <button class="logout-btn" :title="isCollapsed ? (user.isGuest ? 'Войти' : 'Выйти') : ''" @click="handleAuthClick">
@@ -48,7 +47,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
 import { useUserStore } from '@/stores/user'
 import homepageIcon from '@/assets/images/icons/homepage_icon.png'
@@ -59,12 +58,20 @@ import rightArrowPng from '@/assets/images/icons/right_arrow.png'
 import userIcon from '@/assets/images/icons/user_icon.png'
 import openDoorIcon from '@/assets/images/icons/open_door.png'
 
-const router = useRouter()
+// const _router = useRouter()
 const ui = useUiStore()
 const isCollapsed = computed(() => ui.sidebarCollapsed)
 const toggleSidebar = ui.toggleSidebar
 
 const user = useUserStore()
+
+// Логируем состояние пользователя для отладки
+console.log('🔍 Sidebar: состояние пользователя:', {
+  isGuest: user.isGuest,
+  user: user.user,
+  email: user.user?.email,
+  login_display: user.user?.login_display
+})
 
 function handleAuthClick() {
   if (user.isGuest) {

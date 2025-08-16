@@ -57,19 +57,17 @@
           <label class="form-label">Медиа</label>
           <div class="media-options">
             <div class="media-section">
-              <label class="media-label">Изображения</label>
+              <label class="media-label">Изображение</label>
               <input 
+                id="image"
                 type="file" 
-                multiple
                 accept="image/*"
                 @change="handleImageUpload"
                 class="file-input"
               >
-              <div v-if="form.media.images && form.media.images.length > 0" class="file-list">
-                <div v-for="(file, index) in form.media.images" :key="index" class="file-item">
-                  <span>{{ file.name }}</span>
-                  <button type="button" @click="removeImage(index)" class="remove-btn">×</button>
-                </div>
+              <div v-if="form.image" class="file-item">
+                <span>{{ form.image.name }}</span>
+                <button type="button" @click="removeImage" class="remove-btn">×</button>
               </div>
             </div>
 
@@ -81,8 +79,8 @@
                 @change="handleVideoUpload"
                 class="file-input"
               >
-              <div v-if="form.media.videoFile" class="file-item">
-                <span>{{ form.media.videoFile.name }}</span>
+              <div v-if="form.videoFile" class="file-item">
+                <span>{{ form.videoFile.name }}</span>
                 <button type="button" @click="removeVideo" class="remove-btn">×</button>
               </div>
             </div>
@@ -95,8 +93,8 @@
                 @change="handleAudioUpload"
                 class="file-input"
               >
-              <div v-if="form.media.audioFile" class="file-item">
-                <span>{{ form.media.audioFile.name }}</span>
+              <div v-if="form.audioFile" class="file-item">
+                <span>{{ form.audioFile.name }}</span>
                 <button type="button" @click="removeAudio" class="remove-btn">×</button>
               </div>
             </div>
@@ -117,8 +115,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import type { Advertisement, AdvertisementCategory } from '@/types/advertisement'
+import { reactive } from 'vue'
+import type { AdvertisementCreate, AdvertisementCategory } from '@/types/advertisement'
 
 interface Props {
   isVisible: boolean
@@ -126,24 +124,30 @@ interface Props {
 
 interface Emits {
   (e: 'close'): void
-  (e: 'submit', advertisement: Advertisement): void
+  (e: 'submit', advertisement: AdvertisementCreate): void
 }
 
-const props = defineProps<Props>()
+const _props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const form = reactive({
   title: '',
   description: '',
   category: '' as AdvertisementCategory | '',
-  media: {
-    images: [] as File[],
-    videoFile: null as File | null,
-    audioFile: null as File | null
-  }
+  image: undefined as File | undefined,
+  videoFile: undefined as File | undefined,
+  audioFile: undefined as File | undefined
 })
 
 const closeDialog = () => {
+  // Сброс формы при закрытии
+  form.title = ''
+  form.description = ''
+  form.category = ''
+  form.image = undefined
+  form.videoFile = undefined
+  form.audioFile = undefined
+  
   emit('close')
 }
 
@@ -152,62 +156,48 @@ const handleSubmit = () => {
     return
   }
 
-  const newAdvertisement: Advertisement = {
-    id: Date.now(), // Временный ID
+  const newAdvertisement: AdvertisementCreate = {
     title: form.title,
     description: form.description,
     category: form.category as AdvertisementCategory,
-    image: '', // Пока пустое
-    createdAt: new Date(),
-    media: {
-      images: form.media.images.map(file => file.name), // Преобразуем File в string
-      video: form.media.videoFile !== null,
-      audio: form.media.audioFile !== null
-    }
+    image: form.image
   }
 
   emit('submit', newAdvertisement)
-  
-  // Сброс формы
-  form.title = ''
-  form.description = ''
-  form.category = ''
-  form.media.images = []
-  form.media.videoFile = null
-  form.media.audioFile = null
+  closeDialog() // Используем closeDialog для сброса формы и закрытия
 }
 
 const handleImageUpload = (event: Event) => {
   const target = event.target as HTMLInputElement;
-  if (target.files) {
-    form.media.images = Array.from(target.files);
+  if (target.files && target.files.length > 0) {
+    form.image = target.files[0];
   }
 };
 
-const removeImage = (index: number) => {
-  form.media.images.splice(index, 1);
+const removeImage = () => {
+  form.image = undefined;
 };
 
 const handleVideoUpload = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length > 0) {
-    form.media.videoFile = target.files[0];
+    form.videoFile = target.files[0];
   }
 };
 
 const removeVideo = () => {
-  form.media.videoFile = null;
+  form.videoFile = undefined;
 };
 
 const handleAudioUpload = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length > 0) {
-    form.media.audioFile = target.files[0];
+    form.audioFile = target.files[0];
   }
 };
 
 const removeAudio = () => {
-  form.media.audioFile = null;
+  form.audioFile = undefined;
 };
 </script>
 

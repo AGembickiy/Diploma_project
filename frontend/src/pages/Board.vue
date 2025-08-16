@@ -8,12 +8,10 @@
         <CardList 
           :items="userAdvertisements"
           sort-by="date-desc"
-          sort-field="createdAt"
+          sort-field="created_at"
           empty-icon="📋"
           empty-title="Нет объявлений"
           empty-description="У вас пока нет объявлений. Создайте первое объявление!"
-          empty-action-link="#"
-          empty-action-text="Создать объявление"
         >
           <template #default="{ item }">
             <AdvertisementCard
@@ -42,48 +40,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import MainLayout from '@/components/layout/MainLayout.vue'
 import AdvertisementCard from '@/components/advertisement/AdvertisementCard.vue'
 import CreateAdvertisementDialog from '@/components/advertisement/CreateAdvertisementDialog.vue'
 import EditAdvertisementDialog from '@/components/advertisement/EditAdvertisementDialog.vue'
 import CardList from '@/components/ui/CardList.vue'
 import { useUserStore } from '@/stores/user'
-import type { Advertisement } from '@/types/advertisement'
+import type { Advertisement, AdvertisementCreate } from '@/types/advertisement'
+import axios from 'axios'
 
 const user = useUserStore()
 const isDialogVisible = ref(false)
 const isEditDialogVisible = ref(false)
 const editingAdvertisement = ref<Advertisement | null>(null)
+const userAdvertisements = ref<Advertisement[]>([])
+const isLoading = ref(false)
 
-// Объявления пользователя (моковые данные)
-const userAdvertisements = ref<Advertisement[]>([
-  {
-    id: 1,
-    title: 'Опытный танк ищет гильдию',
-    description: 'Танк 80 уровня с полным комплектом эпического снаряжения. Есть опыт всех рейдов. Готов к долгосрочному сотрудничеству.',
-    category: 'Танки',
-    image: '/images/tank.jpg',
-    createdAt: new Date('2024-03-20'),
-    media: {
-      images: ['/images/tank1.jpg', '/images/tank2.jpg'],
-      video: true
-    }
-  },
-  {
-    id: 2,
-    title: 'Гильдмастер набирает команду',
-    description: 'Собираю команду для новой гильдии. Нужны активные игроки всех классов. Есть свой Discord сервер.',
-    category: 'Гилдмастеры',
-    image: '/images/guild.jpg',
-    createdAt: new Date('2024-03-19'),
-    media: {
-      images: ['/images/guild1.jpg'],
-      video: true,
-      audio: true
-    }
+// Загрузка объявлений пользователя
+const loadUserAdvertisements = async () => {
+  if (!user.isAuthenticated) return
+  
+  try {
+    isLoading.value = true
+    const response = await axios.get('http://localhost:8000/api/advertisements/', {
+      headers: {
+        'Authorization': `Token ${user.token}`
+      }
+    })
+    // API возвращает объект с полем results для пагинации
+    userAdvertisements.value = response.data.results || response.data
+  } catch (error) {
+    console.error('Ошибка загрузки объявлений:', error)
+    userAdvertisements.value = []
+  } finally {
+    isLoading.value = false
   }
-])
+}
+
+// Загрузка при монтировании компонента
+onMounted(() => {
+  if (user.isAuthenticated) {
+    loadUserAdvertisements()
+  }
+})
 
 const openDialog = () => {
   isDialogVisible.value = true
@@ -93,10 +93,36 @@ const closeDialog = () => {
   isDialogVisible.value = false
 }
 
-const handleCreateAdvertisement = (advertisement: Advertisement) => {
-  // Добавляем новое объявление в начало списка
-  userAdvertisements.value.unshift(advertisement)
-  closeDialog()
+const handleCreateAdvertisement = async (advertisement: AdvertisementCreate) => {
+  try {
+    const formData = new FormData()
+    formData.append('title', advertisement.title)
+    formData.append('description', advertisement.description)
+    formData.append('category', advertisement.category)
+    if (advertisement.image) {
+      formData.append('image', advertisement.image)
+    }
+    if (advertisement.videoFile) {
+      formData.append('video', advertisement.videoFile)
+    }
+    if (advertisement.audioFile) {
+      formData.append('audio', advertisement.audioFile)
+    }
+    
+    const response = await axios.post('http://localhost:8000/api/advertisements/', formData, {
+      headers: {
+        'Authorization': `Token ${user.token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    
+    // Добавляем новое объявление в начало списка
+    userAdvertisements.value.unshift(response.data)
+    closeDialog()
+  } catch (error) {
+    console.error('Ошибка создания объявления:', error)
+    alert('Ошибка создания объявления')
+  }
 }
 
 const handleEdit = (advertisement: Advertisement) => {

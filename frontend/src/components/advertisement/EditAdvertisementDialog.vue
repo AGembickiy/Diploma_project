@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import type { Advertisement, AdvertisementCategory } from '@/types/advertisement'
 
 interface Props {

@@ -11,6 +11,12 @@
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
+    "noEmit": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "paths": {
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],

@@ -35,15 +35,19 @@
       </div>
       
       <div class="ad-list-wrapper">
+        <div v-if="isLoading" class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>Загрузка объявлений...</p>
+        </div>
+        
         <CardList 
+          v-else
           :items="filteredAdvertisements"
           sort-by="date-desc"
-          sort-field="createdAt"
+          sort-field="created_at"
           empty-icon="🔍"
           empty-title="Ничего не найдено"
-          empty-description="Попробуйте изменить фильтры или создать новое объявление."
-          empty-action-link="/board"
-          empty-action-text="Создать объявление"
+          empty-description="У вас нет созданных объявлений."
         >
           <template #default="{ item }">
             <AdvertisementCard
@@ -65,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import MainLayout from '@/components/layout/MainLayout.vue'
 import AdvertisementCard from '@/components/advertisement/AdvertisementCard.vue'
 import AdvertisementFilters from '@/components/advertisement/AdvertisementFilters.vue'
@@ -73,6 +77,7 @@ import ResponseDialog from '@/components/advertisement/ResponseDialog.vue'
 import CardList from '@/components/ui/CardList.vue'
 import { useUserStore } from '@/stores/user'
 import type { Advertisement, AdvertisementCategory } from '@/types/advertisement'
+import axios from 'axios'
 
 const user = useUserStore()
 
@@ -82,103 +87,41 @@ const filters = ref({
   timeFilter: 'all' as string
 })
 
-// Все объявления (включая пользовательские)
-const allAdvertisements = ref<Advertisement[]>([
-  {
-    id: 1,
-    title: 'Опытный танк ищет гильдию',
-    description: 'Танк 80 уровня с полным комплектом эпического снаряжения. Есть опыт всех рейдов. Готов к долгосрочному сотрудничеству.',
-    category: 'Танки',
-    image: '/images/tank.jpg',
-    createdAt: new Date('2024-03-20'),
-    media: {
-      images: ['/images/tank1.jpg', '/images/tank2.jpg'],
-      video: true
-    }
-  },
-  {
-    id: 2,
-    title: 'Гильдмастер набирает команду',
-    description: 'Собираю команду для новой гильдии. Нужны активные игроки всех классов. Есть свой Discord сервер.',
-    category: 'Гилдмастеры',
-    image: '/images/guild.jpg',
-    createdAt: new Date('2024-03-19'),
-    media: {
-      images: ['/images/guild1.jpg'],
-      video: true,
-      audio: true
-    }
-  },
-  {
-    id: 3,
-    title: 'Зельевар ищет заказы',
-    description: 'Варю все виды зелий. Большой опыт, лучшие ингредиенты. Оптовые заказы приветствуются.',
-    category: 'Зельевары',
-    image: '/images/potion.jpg',
-    createdAt: new Date('2024-03-18'),
-    media: {
-      images: ['/images/potion1.jpg', '/images/potion2.jpg', '/images/potion3.jpg']
-    }
-  },
-  {
-    id: 4,
-    title: 'Хил ищет статик',
-    description: 'Опытный хил 85 уровня. Ищу статик для рейдов. Есть опыт всех контентов.',
-    category: 'Хилы',
-    image: '/images/healer.jpg',
-    createdAt: new Date('2024-03-17'),
-    media: {
-      images: ['/images/healer1.jpg'],
-      video: true
-    }
-  },
-  {
-    id: 5,
-    title: 'ДД на заказы',
-    description: 'ДД 90 уровня. Готов на любые заказы. Быстро и качественно.',
-    category: 'ДД',
-    image: '/images/dd.jpg',
-    createdAt: new Date('2024-03-16'),
-    media: {
-      images: ['/images/dd1.jpg', '/images/dd2.jpg']
-    }
-  },
-  {
-    id: 6,
-    title: 'Кузнец принимает заказы',
-    description: 'Кузнец 95 уровня. Делаю оружие и броню любой сложности. Гарантия качества.',
-    category: 'Кузнецы',
-    image: '/images/blacksmith.jpg',
-    createdAt: new Date('2024-03-15'),
-    media: {
-      images: ['/images/blacksmith1.jpg']
-    }
-  },
-  {
-    id: 7,
-    title: 'Торговец редкими товарами',
-    description: 'Продаю редкие материалы и артефакты. Постоянные клиенты получают скидки.',
-    category: 'Торговцы',
-    image: '/images/merchant.jpg',
-    createdAt: new Date('2024-03-14'),
-    media: {
-      images: ['/images/merchant1.jpg', '/images/merchant2.jpg']
-    }
+// Все объявления (загружаем с API)
+const allAdvertisements = ref<Advertisement[]>([])
+const isLoading = ref(false)
+
+// Загрузка всех публичных объявлений
+const loadPublicAdvertisements = async () => {
+  try {
+    isLoading.value = true
+    console.log('🔄 Загружаю публичные объявления...')
+    const response = await axios.get('http://localhost:8000/api/advertisements/public_advertisements/')
+    console.log('📡 Ответ API:', response.data)
+    allAdvertisements.value = response.data
+    console.log('💾 Сохранено объявлений:', allAdvertisements.value.length)
+  } catch (error) {
+    console.error('❌ Ошибка загрузки объявлений:', error)
+    allAdvertisements.value = []
+  } finally {
+    isLoading.value = false
   }
-])
+}
+
+// Загрузка при монтировании компонента
+onMounted(() => {
+  loadPublicAdvertisements()
+})
 
 // Фильтрация объявлений
 const filteredAdvertisements = computed(() => {
+  console.log('🔍 Фильтрация объявлений. Всего:', allAdvertisements.value.length)
   let filtered = allAdvertisements.value
-
-  // Фильтр по пользователю (исключаем объявления текущего пользователя)
-  if (!user.isGuest) {
-    filtered = filtered.slice(2) // Пока используем простую логику
-  }
 
   // Фильтр по категории
   if (filters.value.category !== 'all') {
     filtered = filtered.filter(ad => ad.category === filters.value.category)
+    console.log('📂 После фильтра по категории:', filtered.length)
   }
 
   // Фильтр по времени
@@ -201,9 +144,11 @@ const filteredAdvertisements = computed(() => {
         timeLimit = new Date(0)
     }
     
-    filtered = filtered.filter(ad => ad.createdAt >= timeLimit)
+    filtered = filtered.filter(ad => new Date(ad.created_at) >= timeLimit)
+    console.log('⏰ После фильтра по времени:', filtered.length)
   }
 
+  console.log('✅ Итоговое количество объявлений:', filtered.length)
   return filtered
 })
 
@@ -241,7 +186,7 @@ const closeResponseDialog = () => {
   selectedAdvertisement.value = null
 }
 
-const handleResponseSubmit = (response: { advertisementId: number; text: string }) => {
+const handleResponseSubmit = (_response: { advertisementId: number; text: string }) => {
   // Здесь будет отправка отклика на сервер
   
   // Показываем уведомление об успешной отправке
@@ -332,6 +277,32 @@ const handleResponseSubmit = (response: { advertisementId: number; text: string 
 .ad-list-wrapper {
   flex: 1;
   overflow: hidden;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+}
+
+.loading-spinner {
+  border: 4px solid var(--border-light);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {

@@ -22,14 +22,14 @@
           <h2 style="font-size: 24px; font-family: 'MedievalSharp', cursive; color: rgb(162, 155, 254); text-align: center; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Вход в аккаунт</h2>
           <form @submit.prevent="handleLogin" style="display: flex; flex-direction: column; gap: 16px;">
             <label style="display: flex; flex-direction: column; gap: 4px;">
-              <span style="font-size: 14px; color: #8a8a8a;">Логин</span>
+              <span style="font-size: 14px; color: #8a8a8a;">Email</span>
               <input
                 v-model="login"
-                type="text"
+                type="email"
                 style="width: 100%; padding: 8px 12px; border-radius: 6px; background-color: #4a4a6a; color: rgb(162, 155, 254); border: none; outline: none; box-sizing: border-box; transition: all 0.2s ease;"
                 required
-                autocomplete="username"
-                aria-label="Логин"
+                autocomplete="email"
+                aria-label="Email"
                 tabindex="0"
                 @focus="handleInputFocus"
                 @blur="handleInputBlur"
@@ -148,14 +148,19 @@
         </template>
         <template v-else-if="dialogState === 'register-success'">
           <div style="text-align: center; color: #a29bfe; font-size: 18px; font-family: 'MedievalSharp', cursive;">
-            На ваш адрес электронной почты отправлена ссылка для завершения регистрации
+            <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+            <div style="margin-bottom: 16px;">Регистрация успешна!</div>
+            <div style="font-size: 14px; color: #8a8a8a; line-height: 1.5;">
+              Мы отправили письмо с подтверждением на ваш email.<br>
+              Пожалуйста, проверьте вашу почту и перейдите по ссылке для активации аккаунта.
+            </div>
           </div>
           <button
             type="button"
             style="margin: 24px auto 0 auto; display: block; background-color: rgb(142, 135, 234); color: #fff; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer; font-family: 'MedievalSharp', cursive; text-shadow: 0 1px 2px rgba(0,0,0,0.3);"
             @click="closeAll"
           >
-            Ок
+            Понятно
           </button>
         </template>
       </div>
@@ -171,9 +176,10 @@ import { useUserStore } from '@/stores/user'
 const ui = useUiStore()
 const user = useUserStore()
 
-// Инициализация темы при загрузке приложения
+// Инициализация темы и аутентификации при загрузке приложения
 onMounted(() => {
   ui.initTheme()
+  user.initAuth()
 })
 
 const login = ref('')
@@ -211,23 +217,111 @@ watch(() => ui.showLoginDialog, (isOpen) => {
   }
 })
 
-const handleLogin = () => {
-  if (login.value && password.value) {
-    user.login(login.value)
-    closeAll()
-    login.value = ''
-    password.value = ''
+const handleLogin = async () => {
+  if (!login.value || !password.value) {
+    alert('Введите email и пароль!')
+    return
+  }
+  
+  try {
+    const response = await fetch('http://localhost:8000/api/users/login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: login.value,
+        password: password.value
+      })
+    })
+    
+    const data = await response.json()
+    
+    if (response.ok) {
+      // Сохраняем токен и данные пользователя
+      if (data.token) {
+        user.setToken(data.token)
+        user.setUser(data.user)
+        // Не нужно загружать профиль повторно, данные уже есть в data.user
+      }
+      closeAll()
+      login.value = ''
+      password.value = ''
+    } else {
+      // Показываем ошибки
+      let errorMessage = 'Ошибка входа:'
+      if (data.email) {
+        errorMessage += `\n- ${data.email[0]}`
+      }
+      if (data.password) {
+        errorMessage += `\n- ${data.password[0]}`
+      }
+      if (data.non_field_errors) {
+        errorMessage += `\n- ${data.non_field_errors[0]}`
+      }
+      alert(errorMessage)
+    }
+  } catch (error) {
+    alert('Ошибка сети. Попробуйте еще раз.')
   }
 }
 
-const handleRegisterSubmit = () => {
-  if (!regLogin.value || !regEmail.value || !regPassword.value || !regPasswordRepeat.value) return
+const handleRegisterSubmit = async () => {
+  if (!regEmail.value || !regPassword.value || !regPasswordRepeat.value) {
+    alert('Заполните все обязательные поля!')
+    return
+  }
+  
   if (regPassword.value !== regPasswordRepeat.value) {
     alert('Пароли не совпадают!')
     return
   }
-  // Здесь должна быть логика отправки данных на сервер
-  dialogState.value = 'register-success'
+  
+  if (regPassword.value.length < 8) {
+    alert('Пароль должен содержать минимум 8 символов!')
+    return
+  }
+  
+  try {
+    const response = await fetch('http://localhost:8000/api/users/register/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: regLogin.value || undefined,
+        email: regEmail.value,
+        password: regPassword.value,
+        password_confirm: regPasswordRepeat.value
+      })
+    })
+    
+    const data = await response.json()
+    
+    if (response.ok) {
+      dialogState.value = 'register-success'
+      // Очищаем форму
+      regLogin.value = ''
+      regEmail.value = ''
+      regPassword.value = ''
+      regPasswordRepeat.value = ''
+    } else {
+      // Показываем ошибки
+      let errorMessage = 'Ошибка при регистрации:'
+      if (data.email) {
+        errorMessage += `\n- ${data.email[0]}`
+      }
+      if (data.password) {
+        errorMessage += `\n- ${data.password[0]}`
+      }
+      if (data.non_field_errors) {
+        errorMessage += `\n- ${data.non_field_errors[0]}`
+      }
+      alert(errorMessage)
+    }
+  } catch (error) {
+    alert('Ошибка сети. Попробуйте еще раз.')
+  }
 }
 
 const handleInputFocus = (e: Event) => {

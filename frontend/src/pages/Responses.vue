@@ -45,12 +45,10 @@
         <CardList 
           :items="filteredResponses"
           sort-by="date-desc"
-          sort-field="createdAt"
-          empty-icon="📝"
+          sort-field="created_at"
+          empty-icon="💬"
           empty-title="Нет откликов"
-          :empty-description="getEmptyStateMessage()"
-          empty-action-link="/board"
-          empty-action-text="Создать объявление"
+          empty-description="У вас пока нет откликов на объявления."
         >
           <template #default="{ item }">
             <ResponseCard
@@ -71,88 +69,24 @@ import { ref, computed } from 'vue'
 import MainLayout from '@/components/layout/MainLayout.vue'
 import ResponseCard from '@/components/advertisement/ResponseCard.vue'
 import CardList from '@/components/ui/CardList.vue'
-import { useUserStore } from '@/stores/user'
+// import { useUserStore } from '@/stores/user'
 import type { Response, Advertisement } from '@/types/advertisement'
 
-const user = useUserStore()
+// const _user = useUserStore()
 
 // Фильтры
 const selectedAdvertisement = ref<'all' | number>('all')
 const statusFilter = ref<'all' | 'new' | 'accepted' | 'rejected'>('all')
-const sortBy = ref<'date-desc' | 'date-asc' | 'author'>('date-desc')
+// const _sortBy = ref<'date-desc' | 'date-asc' | 'author'>('date-desc')
 
-// Объявления пользователя (моковые данные)
-const userAdvertisements = ref<Advertisement[]>([
-  {
-    id: 1,
-    title: 'Опытный танк ищет гильдию',
-    description: 'Танк 80 уровня с полным комплектом эпического снаряжения.',
-    category: 'Танки',
-    image: '/images/tank.jpg',
-    createdAt: new Date('2024-03-20'),
-    media: {
-      images: ['/images/tank1.jpg', '/images/tank2.jpg'],
-      video: true
-    }
-  },
-  {
-    id: 2,
-    title: 'Гильдмастер набирает команду',
-    description: 'Собираю команду для новой гильдии.',
-    category: 'Гилдмастеры',
-    image: '/images/guild.jpg',
-    createdAt: new Date('2024-03-19'),
-    media: {
-      images: ['/images/guild1.jpg'],
-      video: true,
-      audio: true
-    }
-  }
-])
+// Объявления пользователя (пустой массив для реальных данных)
+const userAdvertisements = ref<Advertisement[]>([])
 
-// Отклики на объявления пользователя (моковые данные)
-const allResponses = ref<Response[]>([
-  {
-    id: 1,
-    advertisementId: 1,
-    authorId: 2,
-    authorName: 'Игрок_Алекс',
-    text: 'Привет! Очень заинтересовало ваше объявление. У меня есть опыт танкования, готов к тестированию.',
-    createdAt: new Date('2024-03-21T10:30:00')
-  },
-  {
-    id: 2,
-    advertisementId: 1,
-    authorId: 3,
-    authorName: 'Танк_Макс',
-    text: 'Здравствуйте! Я ищу гильдию для рейдов. У меня есть опыт танкования в сложных боях.',
-    createdAt: new Date('2024-03-20T15:45:00')
-  },
-  {
-    id: 3,
-    advertisementId: 2,
-    authorId: 4,
-    authorName: 'Хил_Анна',
-    text: 'Приветствую! Я опытный хил 85 уровня. Ищу активную гильдию для рейдов.',
-    createdAt: new Date('2024-03-19T09:15:00')
-  },
-  {
-    id: 4,
-    advertisementId: 2,
-    authorId: 5,
-    authorName: 'ДД_Сергей',
-    text: 'Добрый день! Я ДД 90 уровня, ищу статик для рейдов.',
-    createdAt: new Date('2024-03-18T14:20:00')
-  }
-])
+// Отклики на объявления пользователя (пустой массив для реальных данных)
+const allResponses = ref<Response[]>([])
 
-// Статусы откликов (в реальном приложении это будет в базе данных)
-const responseStatuses = ref<Record<number, 'new' | 'accepted' | 'rejected'>>({
-  1: 'new',
-  2: 'accepted',
-  3: 'new',
-  4: 'rejected'
-})
+// Статусы откликов (пустой объект для реальных данных)
+const responseStatuses = ref<Record<number, 'new' | 'accepted' | 'rejected'>>({})
 
 // Фильтрация откликов
 const filteredResponses = computed(() => {
@@ -202,18 +136,6 @@ const handleAcceptResponse = (response: Response) => {
 const handleRejectResponse = (response: Response) => {
   responseStatuses.value[response.id] = 'rejected'
   alert(`Отклик от ${response.authorName} отклонен.`)
-}
-
-const getEmptyStateMessage = () => {
-  if (selectedAdvertisement.value !== 'all') {
-    return 'На выбранное объявление нет откликов'
-  }
-  
-  if (statusFilter.value !== 'all') {
-    return `Нет откликов со статусом "${statusFilter.value}"`
-  }
-  
-  return 'На ваши объявления пока нет откликов'
 }
 </script>
 

@@ -23,14 +23,14 @@
       <h2 class="text-2xl font-heading text-primary text-center mb-2">Вход в аккаунт</h2>
       <form @submit.prevent="handleLogin" class="flex flex-col gap-4">
         <label class="flex flex-col gap-1">
-          <span class="text-sm text-muted">Логин</span>
+          <span class="text-sm text-muted">Email</span>
           <input
-            v-model="login"
-            type="text"
+            v-model="email"
+            type="email"
             class="input input-bordered w-full px-3 py-2 rounded bg-bg-tertiary text-primary focus:ring-2 focus:ring-primary"
             required
-            autocomplete="username"
-            aria-label="Логин"
+            autocomplete="email"
+            aria-label="Email"
             tabindex="0"
           />
         </label>
@@ -58,7 +58,7 @@
           <button
             type="button"
             class="flex-1 bg-secondary text-white py-2 rounded hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-secondary"
-            @click="handleRegister"
+            @click="showRegister"
             aria-label="Зарегистрироваться"
             tabindex="0"
           >
@@ -74,9 +74,9 @@
 import { ref, watch, onUnmounted } from 'vue'
 
 const props = defineProps<{ modelValue: boolean }>()
-const emit = defineEmits(['update:modelValue', 'login', 'register'])
+const emit = defineEmits(['update:modelValue', 'login', 'showRegister'])
 
-const login = ref('')
+const email = ref('')
 const password = ref('')
 const dialogRef = ref<HTMLElement | null>(null)
 
@@ -85,11 +85,11 @@ const handleClose = () => {
 }
 
 const handleLogin = () => {
-  emit('login', { login: login.value, password: password.value })
+  emit('login', { email: email.value, password: password.value })
 }
 
-const handleRegister = () => {
-  emit('register', { login: login.value, password: password.value })
+const showRegister = () => {
+  emit('showRegister')
 }
 
 const handleClickOutside = (e: MouseEvent) => {

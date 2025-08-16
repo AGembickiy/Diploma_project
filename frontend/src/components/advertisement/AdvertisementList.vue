@@ -25,39 +25,13 @@ import AdvertisementCard from './AdvertisementCard.vue'
 import EditAdvertisementDialog from './EditAdvertisementDialog.vue'
 import type { Advertisement } from '@/types/advertisement'
 
-interface Props {
-  newAdvertisement?: Advertisement
-}
+// interface Props {
+//   newAdvertisement?: Advertisement
+// }
 
-const props = defineProps<Props>()
+// const _props = defineProps<Props>()
 
-const advertisements = ref<Advertisement[]>([
-  {
-    id: 1,
-    title: 'Опытный танк ищет гильдию',
-    description: 'Танк 80 уровня с полным комплектом эпического снаряжения. Есть опыт всех рейдов. Готов к долгосрочному сотрудничеству.',
-    category: 'Танки',
-    image: '/images/tank.jpg',
-    createdAt: new Date('2024-03-20'),
-    media: {
-      images: ['/images/tank1.jpg', '/images/tank2.jpg'],
-      video: true
-    }
-  },
-  {
-    id: 2,
-    title: 'Гильдмастер набирает команду',
-    description: 'Собираю команду для новой гильдии. Нужны активные игроки всех классов. Есть свой Discord сервер.',
-    category: 'Гилдмастеры',
-    image: '/images/guild.jpg',
-    createdAt: new Date('2024-03-19'),
-    media: {
-      images: ['/images/guild1.jpg'],
-      video: true,
-      audio: true
-    }
-  }
-])
+const advertisements = ref<Advertisement[]>([])
 
 const isEditDialogVisible = ref(false)
 const editingAdvertisement = ref<Advertisement | null>(null)

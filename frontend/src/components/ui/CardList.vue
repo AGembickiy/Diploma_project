@@ -6,9 +6,6 @@
       <p class="empty-description">
         {{ emptyDescription }}
       </p>
-      <router-link v-if="emptyActionLink" :to="emptyActionLink" class="empty-action">
-        {{ emptyActionText }}
-      </router-link>
     </div>
 
     <div v-else class="list-container">
@@ -34,19 +31,15 @@ interface Props {
   emptyIcon?: string
   emptyTitle?: string
   emptyDescription?: string
-  emptyActionLink?: string
-  emptyActionText?: string
   listClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   sortBy: 'none',
-  sortField: 'createdAt',
+  sortField: 'created_at',
   emptyIcon: '📝',
   emptyTitle: 'Нет элементов',
   emptyDescription: 'Пока нет элементов для отображения.',
-  emptyActionLink: '',
-  emptyActionText: 'Добавить элемент',
   listClass: ''
 })
 
@@ -149,23 +142,6 @@ const getItemKey = (item: any, index: number): string | number => {
   font-size: 0.875rem;
   margin: 0 0 1rem 0;
   line-height: 1.5;
-}
-
-.empty-action {
-  display: inline-block;
-  background: var(--primary-color, #a29bfe);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-family: 'MedievalSharp', cursive;
-  font-size: 0.875rem;
-  transition: background 0.2s;
-}
-
-.empty-action:hover {
-  background: var(--primary-dark, #8c7ae6);
-  color: #fff;
 }
 
 @media (max-width: 768px) {

@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUserStore } from '@/stores/user'
+// import { useUserStore } from '@/stores/user'
 import Card from '@/components/ui/Card.vue'
 import type { Response } from '@/types/advertisement'
 
@@ -67,7 +67,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const user = useUserStore()
+// const _user = useUserStore()
 
 // Статус отклика (в реальном приложении это будет приходить с сервера)
 const status = computed(() => {

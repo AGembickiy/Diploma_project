@@ -30,6 +30,14 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/verify-email',
+    name: 'VerifyEmail',
+    component: () => import('@/pages/VerifyEmail.vue'),
+    meta: {
+      title: 'Подтверждение Email'
+    }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/pages/NotFound.vue'),
@@ -45,7 +53,7 @@ const router = createRouter({
 })
 
 // Глобальный guard для установки заголовков страниц и проверки авторизации
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   if (to.meta.title) {
     document.title = `${to.meta.title} - Дипломный проект`
   }
