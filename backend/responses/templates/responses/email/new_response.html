@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новый отклик на объявление</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+        }
+        .advertisement-info {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .response-text {
+            background: #e8f4fd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Новый отклик на ваше объявление!</h1>
+    </div>
+    
+    <div class="content">
+        <p>Здравствуйте, <strong>{{ author_username }}</strong>!</p>
+        
+        <p>На ваше объявление <strong>"{{ advertisement_title }}"</strong> поступил новый отклик.</p>
+        
+        <div class="advertisement-info">
+            <h3>📋 Информация об объявлении:</h3>
+            <p><strong>Название:</strong> {{ advertisement_title }}</p>
+        </div>
+        
+        <div class="response-text">
+            <h3>💬 Текст отклика:</h3>
+            <p><em>"{{ response_text }}"</em></p>
+            <p><strong>От:</strong> {{ respondent_username }}</p>
+        </div>
+        
+        <p>Для просмотра и управления откликами перейдите в раздел "Доска объявлений" на сайте.</p>
+        
+        <div style="text-align: center;">
+            <a href="{{ site_url }}/board" class="btn">Перейти к откликам</a>
+        </div>
+        
+        <p><small>Это автоматическое уведомление. Пожалуйста, не отвечайте на это письмо.</small></p>
+    </div>
+    
+    <div class="footer">
+        <p>С уважением, команда MMORPG Backend</p>
+        <p><a href="{{ site_url }}">{{ site_url }}</a></p>
+    </div>
+</body>
+</html>

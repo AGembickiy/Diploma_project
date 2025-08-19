@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус отклика изменен</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+        }
+        .status-change {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        .advertisement-info {
+            background: #e8f5e8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+        .btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .status-accepted {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .status-rejected {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📝 Статус отклика изменен</h1>
+    </div>
+    
+    <div class="content">
+        <p>Здравствуйте, <strong>{{ respondent_username }}</strong>!</p>
+        
+        <p>Статус вашего отклика на объявление <strong>"{{ advertisement_title }}"</strong> был изменен.</p>
+        
+        <div class="status-change">
+            <h3>🔄 Изменение статуса:</h3>
+            <p><strong>Было:</strong> <span class="status-{{ old_status }}">{{ old_status }}</span></p>
+            <p><strong>Стало:</strong> 
+                {% if new_status == 'accepted' %}
+                    <span class="status-accepted">✅ Принят</span>
+                {% elif new_status == 'rejected' %}
+                    <span class="status-rejected">❌ Отклонен</span>
+                {% else %}
+                    <span>{{ new_status }}</span>
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="advertisement-info">
+            <h3>📋 Информация об объявлении:</h3>
+            <p><strong>Название:</strong> {{ advertisement_title }}</p>
+        </div>
+        
+        <p>Для просмотра всех ваших откликов перейдите в соответствующий раздел на сайте.</p>
+        
+        <div style="text-align: center;">
+            <a href="{{ site_url }}/responses" class="btn">Просмотреть отклики</a>
+        </div>
+        
+        <p><small>Это автоматическое уведомление. Пожалуйста, не отвечайте на это письмо.</small></p>
+    </div>
+    
+    <div class="footer">
+        <p>С уважением, команда MMORPG Backend</p>
+        <p><a href="{{ site_url }}">{{ site_url }}</a></p>
+    </div>
+</body>
+</html>

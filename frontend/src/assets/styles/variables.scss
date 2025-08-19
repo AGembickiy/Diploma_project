@@ -1,0 +1,64 @@
+// Цвета - светлая тема в стиле фэнтези
+$color-primary: #8B4513; // Saddle Brown - теплый коричневый
+$color-primary-dark: #654321; // Dark Brown
+$color-primary-light: #A0522D; // Sienna
+
+$color-secondary: #DAA520; // Goldenrod
+$color-secondary-dark: #B8860B; // Dark Goldenrod
+$color-secondary-light: #F4A460; // Sandy Brown
+
+$color-accent: #CD853F; // Peru - теплый оранжево-коричневый
+$color-accent-dark: #A0522D; // Sienna
+$color-accent-light: #DEB887; // Burlywood
+
+$color-text-primary: #2F2F2F; // Soft black
+$color-text-secondary: #4A4A4A; // Dark gray
+$color-text-tertiary: #6B6B6B; // Medium gray
+
+$color-background: #FDF6E3; // Warm cream
+$color-background-secondary: #F5F5DC; // Beige
+$color-background-tertiary: #FAF0E6; // Linen
+
+$color-white: #fff;
+$color-border: #D2B48C; // Tan
+$color-border-light: #F5DEB3; // Wheat
+
+// Статусные цвета
+$color-error: #D2691E; // Chocolate - теплый красный
+$color-info: #4682B4; // Steel Blue
+$color-success: #228B22; // Forest Green
+$color-warning: #DAA520; // Goldenrod
+
+// Тени - более мягкие для светлой темы
+$shadow-sm: 0 2px 4px rgba(139, 69, 19, 0.1);
+$shadow-md: 0 4px 6px rgba(139, 69, 19, 0.15);
+$shadow-lg: 0 10px 15px rgba(139, 69, 19, 0.2);
+
+// Размеры
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Шрифты
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-md: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 24px;
+$font-size-2xl: 32px;
+
+// Радиусы
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+// Анимации
+$transition-base: all 0.2s ease;
+
+// Брейкпоинты
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px; 
