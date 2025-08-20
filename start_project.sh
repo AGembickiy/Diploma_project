@@ -2,6 +2,10 @@
 
 echo "🚀 Запуск проекта MMORPG Board..."
 
+# Автоматически обновляем порты перед запуском
+echo "🔄 Обновляю конфигурацию портов..."
+./update_ports.sh
+
 # Функция для остановки всех процессов при выходе
 cleanup() {
     echo "🛑 Останавливаю серверы..."
@@ -15,7 +19,7 @@ trap cleanup SIGINT SIGTERM
 
 # Запускаем backend
 echo "📡 Запускаю Django backend..."
-cd "Diploma_project/backend"
+cd "backend"
 ./run_server.sh &
 BACKEND_PID=$!
 
@@ -29,7 +33,7 @@ cd "../frontend"
 FRONTEND_PID=$!
 
 echo "✅ Проект запущен!"
-echo "🌐 Frontend: http://localhost:5173"
+echo "🌐 Frontend: http://localhost:3001"
 echo "🔧 Backend API: http://localhost:8000"
 echo "📧 Email ссылки теперь будут вести на правильный порт"
 echo ""

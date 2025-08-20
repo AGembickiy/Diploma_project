@@ -52,19 +52,13 @@
           <template #default="{ item }">
             <AdvertisementCard
               :advertisement="item"
-              @response="handleResponse"
             />
           </template>
         </CardList>
       </div>
     </div>
     
-    <ResponseDialog 
-      :is-visible="isResponseDialogVisible"
-      :advertisement="selectedAdvertisement"
-      @close="closeResponseDialog"
-      @submit="handleResponseSubmit"
-    />
+
   </MainLayout>
 </template>
 
@@ -73,7 +67,6 @@ import { ref, computed, onMounted } from 'vue'
 import MainLayout from '@/components/layout/MainLayout.vue'
 import AdvertisementCard from '@/components/advertisement/AdvertisementCard.vue'
 import AdvertisementFilters from '@/components/advertisement/AdvertisementFilters.vue'
-import ResponseDialog from '@/components/advertisement/ResponseDialog.vue'
 import CardList from '@/components/ui/CardList.vue'
 import { useUserStore } from '@/stores/user'
 import type { Advertisement, AdvertisementCategory } from '@/types/advertisement'
@@ -95,10 +88,7 @@ const isLoading = ref(false)
 const loadPublicAdvertisements = async () => {
   try {
     isLoading.value = true
-    console.log('🔄 Загружаю публичные объявления...')
     const response = await axios.get('http://localhost:8000/api/advertisements/public_advertisements/')
-    console.log('📡 Ответ API:', response.data)
-    console.log('👤 Текущий пользователь:', user.user?.id, user.user?.username)
     
     // Дополнительная проверка на фронтенде
     const filteredAds = response.data.filter((ad: any) => {
@@ -106,9 +96,7 @@ const loadPublicAdvertisements = async () => {
       return ad.author?.id !== user.user?.id
     })
     
-    console.log('🔍 После фильтрации на фронтенде:', filteredAds.length)
     allAdvertisements.value = filteredAds
-    console.log('💾 Сохранено объявлений:', allAdvertisements.value.length)
   } catch (error) {
     console.error('❌ Ошибка загрузки объявлений:', error)
     allAdvertisements.value = []
@@ -124,13 +112,11 @@ onMounted(() => {
 
 // Фильтрация объявлений
 const filteredAdvertisements = computed(() => {
-  console.log('🔍 Фильтрация объявлений. Всего:', allAdvertisements.value.length)
   let filtered = allAdvertisements.value
 
   // Фильтр по категории
   if (filters.value.category !== 'all') {
     filtered = filtered.filter(ad => ad.category === filters.value.category)
-    console.log('📂 После фильтра по категории:', filtered.length)
   }
 
   // Фильтр по времени
@@ -154,10 +140,8 @@ const filteredAdvertisements = computed(() => {
     }
     
     filtered = filtered.filter(ad => new Date(ad.created_at) >= timeLimit)
-    console.log('⏰ После фильтра по времени:', filtered.length)
   }
 
-  console.log('✅ Итоговое количество объявлений:', filtered.length)
   return filtered
 })
 

@@ -4,7 +4,7 @@
 source .venv/bin/activate
 
 # Устанавливаем переменные окружения
-export FRONTEND_URL=http://localhost:5173
+export FRONTEND_URL=http://localhost:3001
 
 # Запускаем сервер
 python manage.py runserver 0.0.0.0:8000

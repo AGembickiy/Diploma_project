@@ -2,8 +2,8 @@
   <Card :variant="statusVariant" :hover="true">
     <template #header>
       <div class="response-info">
-        <h3 class="response-author">{{ response.authorName }}</h3>
-        <span class="response-date">{{ formatDate(response.createdAt) }}</span>
+        <h3 class="response-author">{{ response.author.username }}</h3>
+        <span class="response-date">{{ formatDate(response.created_at) }}</span>
         <span class="response-status" :class="statusClass">{{ getStatusText() }}</span>
       </div>
     </template>
@@ -38,13 +38,7 @@
       <p class="response-text">{{ response.text }}</p>
     </div>
     
-    <template #footer>
-      <div class="advertisement-link">
-        <router-link :to="`/advertisement/${response.advertisementId}`" class="link-text">
-          Перейти к объявлению
-        </router-link>
-      </div>
-    </template>
+
   </Card>
 </template>
 
@@ -69,17 +63,8 @@ const emit = defineEmits<Emits>()
 
 // const _user = useUserStore()
 
-// Статус отклика (в реальном приложении это будет приходить с сервера)
-const status = computed(() => {
-  // Пока используем простую логику для демонстрации
-  const statuses: Record<number, 'new' | 'accepted' | 'rejected'> = {
-    1: 'new',
-    2: 'accepted',
-    3: 'new',
-    4: 'rejected'
-  }
-  return statuses[props.response.id] || 'new'
-})
+// Статус отклика из данных ответа
+const status = computed(() => props.response.status)
 
 const statusVariant = computed(() => {
   switch (status.value) {
@@ -103,7 +88,7 @@ const statusClass = computed(() => {
   }
 })
 
-const formatDate = (date: Date): string => {
+const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',
@@ -195,22 +180,7 @@ const handleReject = () => {
   white-space: pre-wrap;
 }
 
-.advertisement-link {
-  /* Стили для футера уже определены в Card компоненте */
-}
 
-.link-text {
-  color: var(--primary-color, #a29bfe);
-  text-decoration: none;
-  font-size: 14px;
-  font-family: 'MedievalSharp', cursive;
-  transition: color 0.2s;
-}
-
-.link-text:hover {
-  color: var(--primary-light, #b8a9ff);
-  text-decoration: underline;
-}
 
 .action-btn {
   background: var(--bg-tertiary, #4a4a6a);

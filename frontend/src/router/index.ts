@@ -30,6 +30,25 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/newsletters',
+    name: 'Newsletters',
+    component: () => import('@/pages/Newsletters.vue'),
+    meta: {
+      title: 'Новостные рассылки',
+      requiresAuth: true,
+      requiresAdmin: true
+    }
+  },
+
+  {
+    path: '/test-auth',
+    name: 'TestAuth',
+    component: () => import('@/pages/TestAuth.vue'),
+    meta: {
+      title: 'Тест аутентификации'
+    }
+  },
+  {
     path: '/verify-email',
     name: 'VerifyEmail',
     component: () => import('@/pages/VerifyEmail.vue'),
@@ -63,6 +82,13 @@ router.beforeEach((to, _from, next) => {
     const userStore = useUserStore()
     if (userStore.isGuest) {
       // Перенаправляем на главную страницу, если пользователь не авторизован
+      next('/')
+      return
+    }
+    
+    // Проверка на админа для админских роутов
+    if (to.meta.requiresAdmin && !userStore.user?.is_staff) {
+      // Перенаправляем на главную страницу, если пользователь не админ
       next('/')
       return
     }

@@ -103,7 +103,7 @@ const tokenError = ref('')
 // Получаем токен из URL параметров
 onMounted(() => {
   const urlToken = route.query.token as string
-  console.log('🔍 URL Token:', urlToken) // Логируем токен из URL
+  
   if (urlToken) {
     token.value = urlToken
     verifyToken()
@@ -121,7 +121,7 @@ const verifyToken = async () => {
   loading.value = true
   error.value = false
 
-  console.log('🔍 Отправляем токен на сервер:', token.value) // Логируем отправляемый токен
+  
 
   try {
     const response = await axios.post('http://localhost:8000/api/users/verify-email/', {

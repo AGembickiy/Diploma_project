@@ -1,65 +1,40 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
-Скрипт для тестирования отправки email
+Простой тест для проверки отправки email
 """
 import os
-import sys
 import django
 
-# Настройка Django
+# Настраиваем Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mmorpg_backend.settings')
 django.setup()
 
 from django.core.mail import send_mail
 from django.conf import settings
 
-def test_email_sending():
-    """Тестирует отправку email"""
-    
-    # Проверяем настройки
-    print("=== Настройки Email ===")
-    print(f"EMAIL_BACKEND: {settings.EMAIL_BACKEND}")
-    print(f"EMAIL_HOST: {getattr(settings, 'EMAIL_HOST', 'Не настроен')}")
-    print(f"EMAIL_PORT: {getattr(settings, 'EMAIL_PORT', 'Не настроен')}")
-    print(f"EMAIL_USE_TLS: {getattr(settings, 'EMAIL_USE_TLS', 'Не настроен')}")
-    print(f"EMAIL_HOST_USER: {getattr(settings, 'EMAIL_HOST_USER', 'Не настроен')}")
-    print(f"DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}")
-    print()
-    
-    # Тестовые данные
-    test_email = input("Введите email для тестирования: ")
-    
+def test_email():
+    """Тестируем отправку email"""
     try:
-        # Отправляем тестовое письмо
-        print(f"Отправляем тестовое письмо на {test_email}...")
+        print("🔍 Тестируем отправку email...")
+        print(f"📧 EMAIL_HOST: {settings.EMAIL_HOST}")
+        print(f"📧 EMAIL_PORT: {settings.EMAIL_PORT}")
+        print(f"📧 EMAIL_HOST_USER: {settings.EMAIL_HOST_USER}")
+        print(f"📧 DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}")
         
+        # Отправляем тестовое письмо
         send_mail(
-            subject='🎮 Тест отправки email - MMORPG',
-            message=f"""
-Здравствуйте!
-
-Это тестовое письмо для проверки настройки SMTP в проекте MMORPG.
-
-Если вы получили это письмо, значит настройка SMTP работает корректно!
-
-С уважением,
-Команда MMORPG
-            """,
+            subject='Тест отправки email - MMORPG Backend',
+            message='Это тестовое письмо для проверки настроек email.',
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[test_email],
+            recipient_list=[settings.EMAIL_HOST_USER],  # Отправляем себе
             fail_silently=False,
         )
         
-        print("✅ Тестовое письмо отправлено успешно!")
-        print("Проверьте вашу почту (включая папку 'Спам')")
+        print("✅ Email успешно отправлен!")
         
     except Exception as e:
         print(f"❌ Ошибка отправки email: {e}")
-        print("\nВозможные причины:")
-        print("1. Неправильный email или пароль приложения")
-        print("2. Двухфакторная аутентификация не включена")
-        print("3. Пароль приложения не создан")
-        print("4. Блокировка со стороны Gmail")
+        print(f"🔍 Тип ошибки: {type(e).__name__}")
 
 if __name__ == '__main__':
-    test_email_sending() 
+    test_email() 

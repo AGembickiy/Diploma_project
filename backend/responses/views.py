@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions, status, serializers
 from rest_framework.decorators import action
-from rest_framework.response import Response
+from rest_framework.response import Response as DRFResponse
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -24,6 +24,9 @@ class ResponseViewSet(viewsets.ModelViewSet):
             # Автор объявления видит отклики на свои объявления
             advertisement_id = self.kwargs.get('advertisement_id')
             return Response.objects.filter(advertisement_id=advertisement_id, advertisement__author=user)
+        elif self.action in ['change_status', 'destroy', 'update', 'partial_update', 'retrieve']:
+            # Для изменения/удаления/просмотра - все отклики на объявления пользователя
+            return Response.objects.filter(advertisement__author=user)
         else:
             # По умолчанию пользователь видит свои отклики
             return Response.objects.filter(author=user)
@@ -58,13 +61,11 @@ class ResponseViewSet(viewsets.ModelViewSet):
                 )
             
             response = serializer.save()
-            print(f'✅ Отклик создан: ID {response.id}, объявление: {response.advertisement.title}')
             
             # Отправляем email уведомление автору объявления
             self.send_response_notification(response)
             
         except Exception as e:
-            print(f'❌ Ошибка при создании отклика: {e}')
             raise
     
     def perform_update(self, serializer):
@@ -74,23 +75,17 @@ class ResponseViewSet(viewsets.ModelViewSet):
         
         # Если статус изменился, отправляем уведомление
         if old_status != response.status:
+            print(f"🔄 Статус отклика изменился: {old_status} -> {response.status}")
             self.send_status_change_notification(response, old_status)
+        else:
+            print(f"ℹ️ Статус отклика не изменился: {old_status}")
     
     def send_response_notification(self, response):
         """Отправка email уведомления о новом отклике"""
         try:
-            print(f'📧 Начинаем отправку email уведомления...')
-            
             advertisement = response.advertisement
             author_email = advertisement.author.email
             author_username = advertisement.author.username
-            
-            print(f'📧 Данные для email:')
-            print(f'   - Объявление: {advertisement.title}')
-            print(f'   - Автор объявления: {author_username}')
-            print(f'   - Email автора: {author_email}')
-            print(f'   - Автор отклика: {response.author.username}')
-            print(f'   - Текст отклика: {response.text[:50]}...')
             
             subject = f'Новый отклик на ваше объявление "{advertisement.title}"'
             
@@ -106,8 +101,6 @@ class ResponseViewSet(viewsets.ModelViewSet):
             # Текстовая версия письма
             plain_message = strip_tags(html_message)
             
-            print(f'📧 Отправляем email...')
-            
             send_mail(
                 subject=subject,
                 message=plain_message,
@@ -117,13 +110,9 @@ class ResponseViewSet(viewsets.ModelViewSet):
                 fail_silently=False,
             )
             
-            print(f'✅ Email уведомление успешно отправлено на {author_email}')
-            
         except Exception as e:
-            print(f'❌ Ошибка отправки email: {e}')
-            print(f'❌ Тип ошибки: {type(e).__name__}')
-            import traceback
-            print(f'❌ Traceback: {traceback.format_exc()}')
+            # Логируем ошибку для отладки
+            print(f"❌ Ошибка отправки email уведомления: {e}")
             # Не прерываем создание отклика из-за ошибки email
     
     def send_status_change_notification(self, response, old_status):
@@ -146,7 +135,7 @@ class ResponseViewSet(viewsets.ModelViewSet):
                 'advertisement_title': advertisement.title,
                 'old_status': status_labels.get(old_status, old_status),
                 'new_status': status_labels.get(response.status, response.status),
-                'site_url': settings.SITE_URL
+                'site_url': getattr(settings, 'SITE_URL', 'http://localhost:3001')
             })
             
             # Текстовая версия письма
@@ -161,39 +150,47 @@ class ResponseViewSet(viewsets.ModelViewSet):
                 fail_silently=False,
             )
             
-            print(f'✅ Email уведомление об изменении статуса отправлено на {respondent_email}')
-            
         except Exception as e:
-            print(f'❌ Ошибка отправки email: {e}')
+            # Логируем ошибку для отладки
+            print(f"❌ Ошибка отправки email уведомления: {e}")
+            # Не прерываем процесс из-за ошибки email
     
     @action(detail=False, methods=['get'])
     def my_responses(self, request):
         """Получить все отклики текущего пользователя"""
         responses = self.get_queryset()
         serializer = ResponseSerializer(responses, many=True)
-        return Response(serializer.data)
+        return DRFResponse(serializer.data)
     
     @action(detail=False, methods=['get'])
     def advertisement_responses(self, request, advertisement_id=None):
-        """Получить все отклики на конкретное объявление (только для автора объявления)"""
-        responses = self.get_queryset()
-        serializer = ResponseSerializer(responses, many=True)
-        return Response(serializer.data)
+        """Получить все отклики на объявления текущего пользователя с фильтрацией"""
+        user = request.user
+        
+        # Получаем все отклики на объявления пользователя
+        queryset = Response.objects.filter(advertisement__author=user)
+        
+        # Применяем фильтры
+        advertisement_id = request.query_params.get('advertisement_id')
+        status_filter = request.query_params.get('status')
+        
+        if advertisement_id and advertisement_id != 'all':
+            queryset = queryset.filter(advertisement_id=advertisement_id)
+        
+        if status_filter and status_filter != 'all':
+            queryset = queryset.filter(status=status_filter)
+        
+        serializer = ResponseSerializer(queryset, many=True)
+        return DRFResponse(serializer.data)
     
     @action(detail=True, methods=['patch'])
     def change_status(self, request, pk=None):
         """Изменить статус отклика (только для автора объявления)"""
         response = self.get_object()
         
-        # Проверяем, что пользователь является автором объявления
-        if response.advertisement.author != request.user:
-            return Response(
-                {'error': 'Вы можете изменять статус только откликов на свои объявления'},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
         serializer = ResponseStatusSerializer(response, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # Используем perform_update для автоматической отправки email
+            self.perform_update(serializer)
+            return DRFResponse(serializer.data)
+        return DRFResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

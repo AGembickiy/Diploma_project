@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/', include('advertisements.urls')),
     path('api/', include('responses.urls')),
+    path('api/', include('newsletters.urls')),
 ]
 
 # Добавляем поддержку медиа файлов для разработки

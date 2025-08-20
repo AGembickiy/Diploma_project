@@ -2,7 +2,7 @@
   <div v-if="isVisible" class="confirmation-overlay" @click="closeDialog">
     <div class="confirmation-dialog" @click.stop>
       <div class="confirmation-header">
-        <h3 class="confirmation-title">✅ Успешно!</h3>
+        <h3 class="confirmation-title">{{ title }}</h3>
       </div>
       
       <div class="confirmation-content">
@@ -10,8 +10,11 @@
       </div>
       
       <div class="confirmation-actions">
+        <button v-if="showCancel" class="btn btn-cancel" @click="handleCancel">
+          {{ cancelText }}
+        </button>
         <button class="btn btn-primary" @click="handleOk">
-          OK
+          {{ confirmText }}
         </button>
       </div>
     </div>
@@ -21,14 +24,26 @@
 <script setup lang="ts">
 interface Props {
   isVisible: boolean
+  title?: string
   message: string
+  confirmText?: string
+  cancelText?: string
+  showCancel?: boolean
 }
 
 interface Emits {
   (e: 'close'): void
+  (e: 'confirm'): void
+  (e: 'cancel'): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  title: 'Подтверждение',
+  confirmText: 'OK',
+  cancelText: 'Отмена',
+  showCancel: false
+})
+
 const emit = defineEmits<Emits>()
 
 const closeDialog = () => {
@@ -36,8 +51,12 @@ const closeDialog = () => {
 }
 
 const handleOk = () => {
-  console.log('🔘 Кнопка OK нажата в ConfirmationDialog')
-  // Закрываем диалог подтверждения
+  emit('confirm')
+  emit('close')
+}
+
+const handleCancel = () => {
+  emit('cancel')
   emit('close')
 }
 </script>
@@ -115,5 +134,19 @@ const handleOk = () => {
   background: #218838;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+.btn-cancel {
+  background: var(--bg-tertiary, #4a4a6a);
+  color: var(--text-secondary, #b8b8b8);
+  border: 2px solid var(--border-color, #4a4a6a);
+  margin-right: 10px;
+}
+
+.btn-cancel:hover {
+  background: var(--bg-primary, #1a1a2e);
+  color: var(--text-primary, #fff);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 74, 106, 0.4);
 }
 </style>

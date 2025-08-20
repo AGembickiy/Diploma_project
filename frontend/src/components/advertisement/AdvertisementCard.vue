@@ -32,10 +32,7 @@
         Ваше объявление
       </button>
       
-      <!-- Отладочная информация -->
-      <div v-if="user.user" class="debug-info" style="font-size: 10px; color: #666; margin-top: 5px;">
-        Debug: Guest={{ user.isGuest }}, Own={{ isOwnAdvertisement }}, HasResponse={{ hasExistingResponse }}
-      </div>
+
       
       <!-- Сообщение о существующем отклике -->
       <span v-if="!user.isGuest && !isOwnAdvertisement && hasExistingResponse" class="existing-response-info">
@@ -124,27 +121,14 @@ const confirmationKey = ref(0) // Ключ для принудительного
 
 // Проверяем, является ли объявление собственным
 const isOwnAdvertisement = computed(() => {
-  console.log('🔍 Проверка isOwnAdvertisement:')
-  console.log('  - user.isGuest:', user.isGuest)
-  console.log('  - user.user:', user.user)
-  console.log('  - advertisement.author:', props.advertisement.author)
-  console.log('  - advertisement.author.id:', props.advertisement.author?.id)
-  console.log('  - user.user.id:', user.user?.id)
-  
   if (user.isGuest || !user.user || !props.advertisement.author) {
-    console.log('  ❌ Возвращаем false (пользователь гость или нет данных)')
     return false
   }
   
   // Приводим ID к числам для корректного сравнения
   const authorId = Number(props.advertisement.author.id)
   const userId = Number(user.user.id)
-  const isOwn = authorId === userId
-  
-  console.log('  🔢 ID автора объявления:', authorId, typeof authorId)
-  console.log('  🔢 ID пользователя:', userId, typeof userId)
-  console.log('  ✅ Результат:', isOwn)
-  return isOwn
+  return authorId === userId
 })
 
 // Проверяем, есть ли уже отклик от текущего пользователя
@@ -179,33 +163,21 @@ const formatDate = (dateString: string): string => {
 }
 
 const handleResponse = () => {
-  console.log('🔘 Кнопка "Отклик" нажата')
-  console.log('📋 Объявление:', props.advertisement.title)
-  console.log('👤 Пользователь:', user.user?.username)
-  console.log('🔑 Токен:', user.token ? 'Есть' : 'Нет')
-  
   isResponseModalOpen.value = true
-  console.log('✅ Модальное окно открыто:', isResponseModalOpen.value)
 }
 
 const closeResponseModal = () => {
-  console.log('🔒 closeResponseModal вызвана')
   isResponseModalOpen.value = false
-  console.log('✅ Модальное окно отклика закрыто')
 }
 
 const closeConfirmationDialog = () => {
-  console.log('🔒 closeConfirmationDialog вызвана')
   isConfirmationDialogOpen.value = false
   confirmationMessage.value = ''
   confirmationKey.value++ // Обновляем ключ для принудительного обновления
-  console.log('✅ Диалог подтверждения закрыт')
 }
 
 const handleResponseSubmit = async (responseData: { advertisementId: number; text: string }) => {
   try {
-    console.log('🚀 Отправляем отклик через API...')
-    console.log('📝 Данные отклика:', responseData)
     
     const response = await fetch('http://localhost:8000/api/responses/', {
       method: 'POST',
@@ -221,11 +193,9 @@ const handleResponseSubmit = async (responseData: { advertisementId: number; tex
     
     if (response.ok) {
       const data = await response.json()
-      console.log('✅ Отклик успешно создан:', data)
       
       // Закрываем окно отклика
       isResponseModalOpen.value = false
-      console.log('✅ Окно отклика закрыто после успешной отправки')
       
       // Показываем диалог подтверждения
       confirmationMessage.value = 'Отклик успешно отправлен! Автор объявления получит уведомление на email.'
@@ -262,7 +232,6 @@ const handleResponseSubmit = async (responseData: { advertisementId: number; tex
     
     // Закрываем окно отклика при ошибке
     isResponseModalOpen.value = false
-    console.log('✅ Окно отклика закрыто при ошибке')
   }
 }
 

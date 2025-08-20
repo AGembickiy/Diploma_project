@@ -147,8 +147,8 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'email_verified', 'date_joined', 'login_display']
-        read_only_fields = ['id', 'email_verified', 'date_joined']
+        fields = ['id', 'username', 'email', 'email_verified', 'date_joined', 'login_display', 'is_staff', 'is_superuser']
+        read_only_fields = ['id', 'email_verified', 'date_joined', 'is_staff', 'is_superuser']
     
     def get_login_display(self, obj):
         """Возвращаем email как логин для отображения"""

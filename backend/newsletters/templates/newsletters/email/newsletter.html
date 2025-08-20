@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ newsletter.subject }}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        .title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .content {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .unsubscribe {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .unsubscribe a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+        .unsubscribe a:hover {
+            text-decoration: underline;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .newsletter-content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎮 MMORPG Board</div>
+            <div class="title">{{ newsletter.title }}</div>
+        </div>
+        
+        <div class="greeting">
+            Здравствуйте, {{ user.username }}!
+        </div>
+        
+        <div class="content">
+            <div class="newsletter-content">
+                {{ newsletter.content|linebreaks }}
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Это письмо отправлено с сайта MMORPG Board</p>
+            <p>Если вы не хотите получать такие письма, вы можете отписаться от рассылки</p>
+            
+            <div class="unsubscribe">
+                <a href="{{ unsubscribe_url }}">Отписаться от рассылки</a>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 12px; color: #95a5a6;">
+                © 2024 MMORPG Board. Все права защищены.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'advertisements',
     'users',
     'responses',
+    'newsletters',
 ]
 
 MIDDLEWARE = [
@@ -165,10 +166,10 @@ REST_FRAMEWORK = {
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3001",
-    "http://127.0.0.1:3001",
-    "http://localhost:3002",
-    "http://127.0.0.1:3002",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
@@ -217,12 +218,9 @@ EMAIL_HOST_USER = 'ahembitski@gmail.com'  # Ваш Gmail
 EMAIL_HOST_PASSWORD = 'yvpl srtc zdjo hpjt'  # Замените на пароль приложения
 
 # Email настройки
-DEFAULT_FROM_EMAIL = 'noreply@mmorpg.com'
-SERVER_EMAIL = 'noreply@mmorpg.com'
+DEFAULT_FROM_EMAIL = 'ahembitski@gmail.com'  # Должен совпадать с EMAIL_HOST_USER
+SERVER_EMAIL = 'ahembitski@gmail.com'  # Должен совпадать с EMAIL_HOST_USER
 
 # Настройки для подтверждения email
 EMAIL_VERIFICATION_EXPIRE_HOURS = 24
-SITE_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')  # URL фронтенда для ссылок в email
-
-# Настройки для откликов
 SITE_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')  # URL фронтенда для ссылок в email

@@ -77,12 +77,7 @@ const closeDialog = () => {
 }
 
 const handleSubmit = () => {
-  console.log('📝 ResponseDialog: handleSubmit вызван')
-  console.log('📝 Текст отклика:', responseText.value.trim())
-  console.log('📝 Объявление:', props.advertisement)
-  
   if (!responseText.value.trim() || !props.advertisement) {
-    console.log('❌ Валидация не прошла')
     return
   }
 
@@ -91,11 +86,9 @@ const handleSubmit = () => {
     text: responseText.value.trim()
   }
 
-  console.log('📤 Отправляем событие submit:', response)
   emit('submit', response)
   
   // Закрываем диалог после отправки отклика
-  console.log('🔒 Закрываем диалог после отправки отклика')
   closeDialog()
 }
 </script>

@@ -27,6 +27,12 @@
               <span v-if="!isCollapsed" class="nav-text">Отклики</span>
             </router-link>
           </li>
+          <li v-if="user.user?.is_staff">
+            <router-link to="/newsletters" class="nav-item" :title="isCollapsed ? 'Рассылки' : ''" :class="{ 'centered': isCollapsed }">
+              <span class="nav-icon">📧</span>
+              <span v-if="!isCollapsed" class="nav-text">Рассылки</span>
+            </router-link>
+          </li>
         </ul>
       </div>
     </nav>
@@ -65,13 +71,7 @@ const toggleSidebar = ui.toggleSidebar
 
 const user = useUserStore()
 
-// Логируем состояние пользователя для отладки
-console.log('🔍 Sidebar: состояние пользователя:', {
-  isGuest: user.isGuest,
-  user: user.user,
-  email: user.user?.email,
-  login_display: user.user?.login_display
-})
+// Состояние пользователя
 
 function handleAuthClick() {
   if (user.isGuest) {

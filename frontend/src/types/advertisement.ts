@@ -49,4 +49,8 @@ export interface Response {
   status: 'new' | 'accepted' | 'rejected'
   created_at: string
   updated_at: string
+  // Добавляем поле для совместимости с существующим кодом
+  advertisementId?: number
+  authorName?: string
+  createdAt?: Date
 } 

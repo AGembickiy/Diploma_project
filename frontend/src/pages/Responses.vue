@@ -13,12 +13,25 @@
             Принятые: {{ acceptedResponses.length }}
           </span>
         </div>
+        
+        <!-- Индикатор загрузки -->
+        <div v-if="isLoading" class="loading-indicator">
+          <span class="loading-text">Загрузка...</span>
+        </div>
+        
+        <!-- Сообщение об ошибке -->
+        <div v-if="error" class="error-message">
+          <span class="error-text">{{ error }}</span>
+          <button @click="loadData" class="retry-btn">Повторить</button>
+        </div>
+        
+
       </div>
 
       <div class="responses-filters">
         <div class="filter-group">
           <label class="filter-label">Объявление:</label>
-          <select v-model="selectedAdvertisement" class="filter-select">
+          <select v-model="selectedAdvertisement" class="filter-select" @change="handleFilterChange">
             <option value="all">Все объявления</option>
             <option 
               v-for="ad in userAdvertisements" 
@@ -32,7 +45,7 @@
         
         <div class="filter-group">
           <label class="filter-label">Статус:</label>
-          <select v-model="statusFilter" class="filter-select">
+          <select v-model="statusFilter" class="filter-select" @change="handleFilterChange">
             <option value="all">Все отклики</option>
             <option value="new">Новые</option>
             <option value="accepted">Принятые</option>
@@ -60,33 +73,46 @@
           </template>
         </CardList>
       </div>
+
+      <ConfirmationDialog
+        :isVisible="confirmState.visible"
+        :title="confirmState.title"
+        :message="confirmState.message"
+        :confirmText="confirmState.confirmText"
+        :cancelText="confirmState.cancelText"
+        :showCancel="true"
+        @confirm="confirmState.onConfirm && confirmState.onConfirm()"
+        @close="closeConfirm"
+      />
     </div>
   </MainLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import MainLayout from '@/components/layout/MainLayout.vue'
 import ResponseCard from '@/components/advertisement/ResponseCard.vue'
 import CardList from '@/components/ui/CardList.vue'
-// import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user'
+import { ResponsesService } from '@/services/responses'
 import type { Response, Advertisement } from '@/types/advertisement'
+import ConfirmationDialog from '@/components/advertisement/ConfirmationDialog.vue'
 
-// const _user = useUserStore()
+const userStore = useUserStore()
+
+// Состояние загрузки
+const isLoading = ref(false)
+const error = ref<string | null>(null)
 
 // Фильтры
 const selectedAdvertisement = ref<'all' | number>('all')
 const statusFilter = ref<'all' | 'new' | 'accepted' | 'rejected'>('all')
-// const _sortBy = ref<'date-desc' | 'date-asc' | 'author'>('date-desc')
 
-// Объявления пользователя (пустой массив для реальных данных)
+// Объявления пользователя
 const userAdvertisements = ref<Advertisement[]>([])
 
-// Отклики на объявления пользователя (пустой массив для реальных данных)
+// Отклики на объявления пользователя
 const allResponses = ref<Response[]>([])
-
-// Статусы откликов (пустой объект для реальных данных)
-const responseStatuses = ref<Record<number, 'new' | 'accepted' | 'rejected'>>({})
 
 // Фильтрация откликов
 const filteredResponses = computed(() => {
@@ -94,15 +120,12 @@ const filteredResponses = computed(() => {
 
   // Фильтр по объявлению
   if (selectedAdvertisement.value !== 'all') {
-    responses = responses.filter(response => response.advertisementId === selectedAdvertisement.value)
+    responses = responses.filter(response => response.advertisement.id === selectedAdvertisement.value)
   }
 
   // Фильтр по статусу
   if (statusFilter.value !== 'all') {
-    responses = responses.filter(response => {
-      const status = responseStatuses.value[response.id] || 'new'
-      return status === statusFilter.value
-    })
+    responses = responses.filter(response => response.status === statusFilter.value)
   }
 
   return responses
@@ -110,33 +133,160 @@ const filteredResponses = computed(() => {
 
 // Статистика
 const newResponses = computed(() => 
-  allResponses.value.filter(response => (responseStatuses.value[response.id] || 'new') === 'new')
+  allResponses.value.filter(response => response.status === 'new')
 )
 
 const acceptedResponses = computed(() => 
-  allResponses.value.filter(response => responseStatuses.value[response.id] === 'accepted')
+  allResponses.value.filter(response => response.status === 'accepted')
 )
 
-// Обработчики
-const handleDeleteResponse = (response: Response) => {
-  if (confirm('Вы уверены, что хотите удалить этот отклик?')) {
-    const index = allResponses.value.findIndex(r => r.id === response.id)
-    if (index !== -1) {
-      allResponses.value.splice(index, 1)
-      delete responseStatuses.value[response.id]
-    }
+// Загрузка данных
+const loadData = async () => {
+  if (!userStore.isAuthenticated) return
+  
+  isLoading.value = true
+  error.value = null
+  
+  try {
+    // Загружаем объявления и отклики параллельно
+    const [advertisements, responses] = await Promise.all([
+      ResponsesService.getMyAdvertisements(),
+      ResponsesService.getMyAdvertisementResponses()
+    ])
+    
+    userAdvertisements.value = advertisements
+    allResponses.value = responses.map(response => ({
+      ...response,
+      // Добавляем совместимые поля для существующего кода
+      advertisementId: response.advertisement.id,
+      authorName: response.author.username,
+      createdAt: new Date(response.created_at)
+    }))
+    
+
+  } catch (err) {
+    console.error('❌ Ошибка загрузки данных:', err)
+    error.value = 'Ошибка загрузки данных. Попробуйте обновить страницу.'
+  } finally {
+    isLoading.value = false
   }
 }
 
-const handleAcceptResponse = (response: Response) => {
-  responseStatuses.value[response.id] = 'accepted'
-  alert(`Отклик от ${response.authorName} принят!`)
+// Обновление данных при изменении фильтров
+const updateResponses = async () => {
+  if (!userStore.isAuthenticated) return
+  
+  try {
+    // Загружаем все данные заново для актуальности
+    await loadData()
+  } catch (err) {
+    console.error('❌ Ошибка обновления откликов:', err)
+    error.value = 'Ошибка обновления данных.'
+  }
 }
 
-const handleRejectResponse = (response: Response) => {
-  responseStatuses.value[response.id] = 'rejected'
-  alert(`Отклик от ${response.authorName} отклонен.`)
+// Обработчики
+type ConfirmState = {
+  visible: boolean
+  title: string
+  message: string
+  confirmText: string
+  cancelText: string
+  onConfirm: null | (() => void)
 }
+
+const confirmState = ref<ConfirmState>({
+  visible: false,
+  title: 'Подтверждение',
+  message: '',
+  confirmText: 'Удалить',
+  cancelText: 'Отмена',
+  onConfirm: null
+})
+
+const openConfirm = (cfg: Partial<ConfirmState>) => {
+  confirmState.value = {
+    visible: true,
+    title: cfg.title ?? 'Подтверждение',
+    message: cfg.message ?? '',
+    confirmText: cfg.confirmText ?? 'Подтвердить',
+    cancelText: cfg.cancelText ?? 'Отмена',
+    onConfirm: cfg.onConfirm ?? null
+  }
+}
+
+const closeConfirm = () => {
+  confirmState.value.visible = false
+  confirmState.value.onConfirm = null
+}
+
+const handleDeleteResponse = async (response: Response) => {
+  openConfirm({
+    title: 'Удалить отклик',
+    message: 'Вы уверены, что хотите удалить этот отклик? Это действие необратимо.',
+    confirmText: 'Удалить',
+    cancelText: 'Отмена',
+    onConfirm: async () => {
+      try {
+        await ResponsesService.deleteResponse(response.id)
+        // Автоматически обновляем данные с сервера
+        await loadData()
+      } catch (err) {
+        console.error('❌ Ошибка удаления отклика:', err)
+        error.value = 'Ошибка удаления отклика. Попробуйте обновить страницу.'
+      }
+    }
+  })
+}
+
+const handleAcceptResponse = async (response: Response) => {
+  try {
+    await ResponsesService.changeResponseStatus(response.id, 'accepted')
+    // Автоматически обновляем данные с сервера
+    await loadData()
+  } catch (err) {
+    console.error('❌ Ошибка принятия отклика:', err)
+    error.value = 'Ошибка принятия отклика. Попробуйте обновить страницу.'
+  }
+}
+
+const handleRejectResponse = async (response: Response) => {
+  try {
+    await ResponsesService.changeResponseStatus(response.id, 'rejected')
+    // Автоматически обновляем данные с сервера
+    await loadData()
+  } catch (err) {
+    console.error('❌ Ошибка отклонения отклика:', err)
+    error.value = 'Ошибка отклонения отклика. Попробуйте обновить страницу.'
+  }
+}
+
+// Наблюдаем за изменениями фильтров
+const handleFilterChange = () => {
+  updateResponses()
+}
+
+// Интервал для автоматического обновления данных
+let autoRefreshInterval: number | null = null
+
+// Загружаем данные при монтировании компонента
+onMounted(() => {
+  loadData()
+  
+  // Автоматическое обновление данных каждые 30 секунд
+  autoRefreshInterval = setInterval(() => {
+    if (!isLoading.value) {
+      loadData()
+    }
+  }, 30000) // 30 секунд
+})
+
+// Очищаем интервал при размонтировании компонента
+onUnmounted(() => {
+  if (autoRefreshInterval) {
+    clearInterval(autoRefreshInterval)
+  }
+})
 </script>
 
 <style scoped>
@@ -214,6 +364,83 @@ const handleRejectResponse = (response: Response) => {
 .responses-list-wrapper {
   flex: 1;
   overflow: hidden;
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.loading-text {
+  color: var(--primary-color, #a29bfe);
+  font-size: 14px;
+  font-family: var(--font-family-body);
+}
+
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--error-color, #e17055);
+  border-radius: 8px;
+  border: 1px solid var(--error-color, #e17055);
+}
+
+.error-text {
+  color: #fff;
+  font-size: 14px;
+  font-family: var(--font-family-body);
+  text-align: center;
+}
+
+.retry-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-family-body);
+}
+
+.retry-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.refresh-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.refresh-btn {
+  background: var(--primary-color, #a29bfe);
+  border: 1px solid var(--primary-color, #a29bfe);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-family-body);
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: var(--primary-light, #b8a9ff);
+  border-color: var(--primary-light, #b8a9ff);
+}
+
+.refresh-btn:disabled {
+  background: var(--text-muted, #8a8a8a);
+  border-color: var(--text-muted, #8a8a8a);
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {

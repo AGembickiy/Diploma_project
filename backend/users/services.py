@@ -106,7 +106,7 @@ class EmailService:
             )
             return True
         except Exception as e:
-            print(f"Ошибка отправки email: {e}")
+    
             return False
     
     @staticmethod
@@ -192,5 +192,5 @@ class EmailService:
             )
             return True
         except Exception as e:
-            print(f"Ошибка отправки приветственного email: {e}")
+    
             return False 

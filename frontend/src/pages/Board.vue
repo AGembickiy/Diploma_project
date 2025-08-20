@@ -36,6 +36,17 @@
       @close="closeEditDialog"
       @submit="handleEditSubmit"
     />
+    
+    <ConfirmationDialog
+      :is-visible="showDeleteConfirm"
+      title="Удалить объявление"
+      message="Вы уверены, что хотите удалить это объявление? Это действие необратимо."
+      confirm-text="Удалить"
+      cancel-text="Отмена"
+      :show-cancel="true"
+      @confirm="confirmDelete"
+      @close="showDeleteConfirm = false"
+    />
   </MainLayout>
 </template>
 
@@ -46,6 +57,7 @@ import AdvertisementCard from '@/components/advertisement/AdvertisementCard.vue'
 import CreateAdvertisementDialog from '@/components/advertisement/CreateAdvertisementDialog.vue'
 import EditAdvertisementDialog from '@/components/advertisement/EditAdvertisementDialog.vue'
 import CardList from '@/components/ui/CardList.vue'
+import ConfirmationDialog from '@/components/advertisement/ConfirmationDialog.vue'
 import { useUserStore } from '@/stores/user'
 import type { Advertisement, AdvertisementCreate } from '@/types/advertisement'
 import axios from 'axios'
@@ -56,6 +68,8 @@ const isEditDialogVisible = ref(false)
 const editingAdvertisement = ref<Advertisement | null>(null)
 const userAdvertisements = ref<Advertisement[]>([])
 const isLoading = ref(false)
+const showDeleteConfirm = ref(false)
+const deletingAdvertisement = ref<Advertisement | null>(null)
 
 // Загрузка объявлений пользователя
 const loadUserAdvertisements = async () => {
@@ -70,16 +84,11 @@ const loadUserAdvertisements = async () => {
     })
     // API возвращает объект с полем results для пагинации
     const advertisements = response.data.results || response.data
-    console.log('📋 Загружены объявления:', advertisements)
+
     
     // Проверяем, что у каждого объявления есть информация об авторе
     advertisements.forEach((ad: any, index: number) => {
-      console.log(`📋 Объявление ${index + 1}:`, {
-        id: ad.id,
-        title: ad.title,
-        author: ad.author,
-        authorId: ad.author?.id
-      })
+      // Логика проверки автора
     })
     
     userAdvertisements.value = advertisements
@@ -107,9 +116,6 @@ const closeDialog = () => {
 }
 
 const handleCreateAdvertisement = async (advertisement: AdvertisementCreate) => {
-  console.log('🚀 Создание объявления...')
-  console.log('👤 Текущий пользователь:', user.user)
-  console.log('🔑 Токен:', user.token ? 'Есть' : 'Нет')
   
   try {
     const formData = new FormData()
@@ -142,8 +148,7 @@ const handleCreateAdvertisement = async (advertisement: AdvertisementCreate) => 
         email: user.user?.email
       }
     }
-    console.log('🆕 Создано новое объявление:', newAdvertisement)
-    console.log('👤 Автор объявления:', newAdvertisement.author)
+
     userAdvertisements.value.unshift(newAdvertisement)
     closeDialog()
   } catch (error) {
@@ -158,29 +163,38 @@ const handleEdit = (advertisement: Advertisement) => {
 }
 
 const handleDelete = async (advertisement: Advertisement) => {
-  if (confirm('Вы уверены, что хотите удалить это объявление?')) {
-    try {
-      await axios.delete(`http://localhost:8000/api/advertisements/${advertisement.id}/`, {
-        headers: {
-          'Authorization': `Token ${user.token}`
-        }
-      })
-      
-      // Удаляем из локального списка только после успешного удаления на сервере
-    const index = userAdvertisements.value.findIndex(ad => ad.id === advertisement.id)
-    if (index !== -1) {
-      userAdvertisements.value.splice(index, 1)
-      }
-    } catch (error) {
-      console.error('Ошибка удаления объявления:', error)
-      alert('Ошибка удаления объявления')
-    }
-  }
+  // Показываем диалог подтверждения
+  showDeleteConfirm.value = true
+  deletingAdvertisement.value = advertisement
 }
 
 const closeEditDialog = () => {
   isEditDialogVisible.value = false
   editingAdvertisement.value = null
+}
+
+const confirmDelete = async () => {
+  if (!deletingAdvertisement.value) return
+  
+  try {
+    await axios.delete(`http://localhost:8000/api/advertisements/${deletingAdvertisement.value.id}/`, {
+      headers: {
+        'Authorization': `Token ${user.token}`
+      }
+    })
+    
+    // Удаляем из локального списка только после успешного удаления на сервере
+    const index = userAdvertisements.value.findIndex(ad => ad.id === deletingAdvertisement.value?.id)
+    if (index !== -1) {
+      userAdvertisements.value.splice(index, 1)
+    }
+    
+    showDeleteConfirm.value = false
+    deletingAdvertisement.value = null
+  } catch (error) {
+    console.error('Ошибка удаления объявления:', error)
+    alert('Ошибка удаления объявления')
+  }
 }
 
 const handleEditSubmit = async (updatedAdvertisement: Advertisement) => {
@@ -223,7 +237,7 @@ const handleEditSubmit = async (updatedAdvertisement: Advertisement) => {
           email: user.user?.email
         }
       }
-      console.log('✏️ Обновлено объявление:', updatedAd)
+  
       userAdvertisements.value[index] = updatedAd
     }
     

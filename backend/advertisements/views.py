@@ -11,8 +11,22 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        """Возвращает объявления текущего пользователя"""
-        return Advertisement.objects.filter(author=self.request.user)
+        """Возвращает объявления в зависимости от действия"""
+        if self.action == 'retrieve':
+            # Для просмотра конкретного объявления разрешаем всем
+            return Advertisement.objects.all()
+        elif self.action == 'my_advertisements':
+            # Только объявления текущего пользователя
+            return Advertisement.objects.filter(author=self.request.user)
+        else:
+            # По умолчанию только объявления текущего пользователя
+            return Advertisement.objects.filter(author=self.request.user)
+    
+    def get_permissions(self):
+        """Разрешаем просмотр объявлений всем пользователям"""
+        if self.action in ['retrieve', 'public_advertisements']:
+            return [permissions.AllowAny()]
+        return super().get_permissions()
     
     def get_serializer_class(self):
         """Выбирает сериализатор в зависимости от действия"""
